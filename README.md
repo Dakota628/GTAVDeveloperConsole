@@ -1,8 +1,11 @@
 ﻿# GTAV Developer Console
 
 ### Screenshots:
-![obj-selector](https://cloud.githubusercontent.com/assets/1666312/8532083/c558a9de-23f9-11e5-91b2-f3ddcfeb4a4d.png)
+Console:
 ![console](https://cloud.githubusercontent.com/assets/1666312/8532082/c558cf36-23f9-11e5-8162-9f92386a9d9e.png)
+Object Selector:
+![obj-selector](https://cloud.githubusercontent.com/assets/1666312/8532083/c558a9de-23f9-11e5-91b2-f3ddcfeb4a4d.png)
+
 
 ### Downloads:
 Prebuilt binaries can be found on the [releases](../../releases) page
