@@ -14,7 +14,7 @@ Prebuilt binaries can be found on the [releases](../../releases) page
 ### Features:
 
  * Run C# code from console or as arguments
- * GTA native type based commandsa
+ * GTA native type based commands
  * Copy/Paste
  * API to integrate with other scripts
  * Integrated object selector to select onscreen objects
@@ -36,7 +36,7 @@ Prebuilt binaries can be found on the [releases](../../releases) page
 * **Number** - 10.000000, 10, -10, -10.000
 * **CodeBlock (Can represent any object)** - {return new Player(0)}, {return new Player(0).Character}
 * **String** - "hello", "im a string", "YAY!", quotes are not required if there are no spaces in the string
-* **Boolean** true, false
+* **Boolean** - true, false
 
 
 ### Dependencies:

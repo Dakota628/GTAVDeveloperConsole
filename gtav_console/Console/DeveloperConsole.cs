@@ -29,14 +29,6 @@ namespace DeveloperConsole {
     /// </summary>
     public class DeveloperConsole : Script {
         public delegate void OnConsoleAttached(DeveloperConsole developerConsole);
-        //TODO: USING_MISSION_CREATOR
-        //TODO: PREDATOR MISSLE
-        //TODO: set all peds weapons to RAILGUN
-        //TODO: add stun command (stun with 0 damage done)
-        //TODO: allow load commands from file?
-        //TODO: create docs and examples as well as console usage docs (controls, etc)
-        //TODO: noclip using controls
-        //TODO: quake command -> explode all vehicles in radius, stun all peds in radius, shake screen/controller
 
         private const int VkCapital = 0x14;
 
