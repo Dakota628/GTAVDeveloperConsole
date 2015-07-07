@@ -43,6 +43,7 @@ namespace DeveloperConsole {
         /// </summary>
         public void Draw() {
             if (Enabled) {
+                UI.ShowSubtitle("Press Tab to cycle between objects.\nPress Ctl+Tab to select the object highlighted in red.", 1);
                 GTAFuncs.ShowCursorThisFrame();
                 GTAFuncs.DisplayHud(false);
                 GTAFuncs.DisplayRadar(false);

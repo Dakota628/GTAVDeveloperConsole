@@ -92,9 +92,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if not defined CI  and not defined APPVEYOR (
- xcopy  "$(ProjectDir)$(OutDir)DeveloperConsole.dll" "E:\Steam\SteamApps\common\Grand Theft Auto V\scripts\DeveloperConsole.dll" /b/v/y
-)</PostBuildEvent>
+    <PostBuildEvent>xcopy  "$(ProjectDir)$(OutDir)DeveloperConsole.dll" "E:\Steam\SteamApps\common\Grand Theft Auto V\scripts\DeveloperConsole.dll" /b/v/y/c</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
