@@ -54,53 +54,53 @@ namespace DeveloperConsole {
             if (GTAFuncs.IsWaypointActive())
                 _lastWaypoint = new Blip(GTAFuncs.GetFirstBlipInfoID((int) BlipSprite.Waypoint));
 
+            _developerConsole.PrintDebug("MoveUp: " + GTAFuncs.GetControlNormal(Control.MoveUp));
+
             if (_noClipEnabled) {
+                Game.Player.Character.Rotation = GameplayCamera.Rotation;
+
+                GTAFuncs.SetEntityGravity(Game.Player.Character, false);
+                GTAFuncs.SetEntityLoadColissionFlag(Game.Player.Character, false);
+                GTAFuncs.SetEntityRecordsCollisions(Game.Player.Character, false);
+                GTAFuncs.SetEntityCollision(Game.Player.Character, false, false);
                 GTAFuncs.DisableControlAction(Control.MoveUp, true);
                 GTAFuncs.DisableControlAction(Control.MoveDown, true);
                 GTAFuncs.DisableControlAction(Control.MoveLeft, true);
                 GTAFuncs.DisableControlAction(Control.MoveRight, true);
                 GTAFuncs.DisableControlAction(Control.Attack, true);
-                GTAFuncs.DisableControlAction(Control.Attack, true);
+                GTAFuncs.DisableControlAction(Control.Aim, true);
 
                 bool pressed = false;
+                Vector3 v = new Vector3(0, 0, 0);
 
                 if (Game.Player.Character.IsInVehicle() || Game.Player.Character.IsSittingInVehicle())
                     Game.Player.Character.Position = Game.Player.Character.Position;
 
-                if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.MoveUp)) {
-                    Game.Player.Character.Velocity = Vector3.Multiply(Game.Player.Character.ForwardVector, 10);
-                    Game.Player.Character.Velocity = new Vector3(0, 0, 10);
-                    pressed = true;
+                if (GTAFuncs.GetControlNormal(Control.MoveUp) != 0) {
+                    v  += Vector3.Multiply(Game.Player.Character.ForwardVector, -25 * GTAFuncs.GetControlNormal(Control.MoveUp));
                 }
-                if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.MoveDown)) {
-                    Game.Player.Character.Velocity = Vector3.Multiply(Game.Player.Character.ForwardVector, -10);
-                    pressed = true;
-                }
-                if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.MoveLeft)) {
-                    Game.Player.Character.Velocity = Vector3.Multiply(Game.Player.Character.RightVector, -10);
-                    pressed = true;
-                }
-                if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.MoveRight)) {
-                    Game.Player.Character.Velocity = Vector3.Multiply(Game.Player.Character.RightVector, 10);
-                    pressed = true;
+                if (GTAFuncs.GetControlNormal(Control.MoveRight) != 0) {
+                     v += Vector3.Multiply(Game.Player.Character.RightVector, 25 * GTAFuncs.GetControlNormal(Control.MoveRight));
                 }
                 if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.Attack)) {
-                    Game.Player.Character.Velocity = Vector3.Multiply(Game.Player.Character.UpVector, 10);
-                    pressed = true;
+                    v += Vector3.Multiply(Game.Player.Character.UpVector, 25);
                 }
-                if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.Attack2)) {
-                    Game.Player.Character.Velocity = Vector3.Multiply(Game.Player.Character.UpVector, -10);
-                    pressed = true;
+                if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.Aim)) {
+                    v += Vector3.Multiply(Game.Player.Character.UpVector, -25);
                 }
 
-                if(!pressed) Game.Player.Character.Velocity = new Vector3(0, 0, 0);
+                Game.Player.Character.Velocity = v;
             } else {
                 GTAFuncs.EnableControlAction(Control.MoveUp, true);
                 GTAFuncs.EnableControlAction(Control.MoveDown, true);
                 GTAFuncs.EnableControlAction(Control.MoveLeft, true);
                 GTAFuncs.EnableControlAction(Control.MoveRight, true);
                 GTAFuncs.EnableControlAction(Control.Attack, true);
-                GTAFuncs.EnableControlAction(Control.Attack, true);
+                GTAFuncs.EnableControlAction(Control.Aim, true);
+                GTAFuncs.SetEntityGravity(Game.Player.Character, true);
+                GTAFuncs.SetEntityLoadColissionFlag(Game.Player.Character, true);
+                GTAFuncs.SetEntityRecordsCollisions(Game.Player.Character, true);
+                GTAFuncs.SetEntityCollision(Game.Player.Character, true, true);
             }
 
             GTAFuncs.AntiBan();

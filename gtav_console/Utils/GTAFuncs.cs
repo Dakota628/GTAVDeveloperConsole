@@ -7,6 +7,35 @@ using Font = GTA.Font;
 
 namespace DeveloperConsole {
     public static class GTAFuncs {
+        public static void SetEntityRecordsCollisions(Entity e, bool b) {
+            Function.Call(Hash.SET_ENTITY_RECORDS_COLLISIONS, e, b);
+        }
+
+        public static void SetEntityCollision(Entity e, bool b, bool b1) {
+            Function.Call(Hash.SET_ENTITY_COLLISION, e, b, b1);
+        }
+
+        public static void SetEntityProofs(Entity e, bool b1, bool b2, bool b3, bool b4, bool b5, bool b6, bool b7,
+            bool b8) {
+                Function.Call(Hash.SET_ENTITY_PROOFS, e, b1, b2, b3, b4, b5, b6, b7, b8);
+        }
+
+        public static void SetEntityLoadColissionFlag(Entity e, bool b) {
+            Function.Call(Hash.SET_ENTITY_LOAD_COLLISION_FLAG, e, b);
+        }
+
+        public static void SetEntityGravity(Entity e, bool b) {
+            Function.Call(Hash.SET_ENTITY_HAS_GRAVITY,e.Handle, false);
+        }
+
+        public static float GetControlNormal(Control c) {
+            return Function.Call<float>(Hash.GET_CONTROL_NORMAL, 0, (int)c);
+        }
+
+        public static int GetControlValue(Control c) {
+            return Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) c);
+        }
+
         public static bool IsControlPressedIgnoreDisabled(Control c) {
             return Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED, 0, (int) c) || Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int) c);
         }
