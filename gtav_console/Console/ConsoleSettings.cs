@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace DeveloperConsole {
@@ -11,7 +12,7 @@ namespace DeveloperConsole {
         public const Keys CursorRightKey = Keys.Right;
         public const Keys DelKey = Keys.Delete;
         public const Keys BackSpaceKey = Keys.Back;
-        public static string Version = "1";
+        public static string Version = FileVersionInfo.GetVersionInfo(typeof(DeveloperConsole).Assembly.Location).ProductVersion;
         public static int NumLines = 15;
         public static float FontSize = .3F;
         public static string PreString = "--> ";
