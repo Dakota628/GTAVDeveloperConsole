@@ -1,3 +1,4 @@
+
 version: '{build}'
 branches:
   only:
@@ -19,7 +20,7 @@ deploy:
 - provider: GitHub
   tag: DeveloperConsole $(appveyor_build_version)
   auth_token:
-    secure: fImWdiSkkwnA/2jUFFlZhNTkP355qYu90e2YsDUNT5vfEoigKYfoALUaSIuuDgPs
+    secure: hU0pXnjcGJ48MqwKBAnDjCgICQEpo0wYvKJDjnBvUiA7rqnYDP1bmwFqt68mWHP5
   artifact: DeveloperConsole
   prerelease: true
   on:
