@@ -1,32 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.AccessControl;
 
 namespace DeveloperConsole {
     /// <summary>
-    /// Model for dispatching commands to their specified callbacks
+    ///     Model for dispatching commands to their specified callbacks
     /// </summary>
     public class CommandDispatcher {
         /// <summary>
-        /// Delegate that handles command events
+        ///     Delegate that handles command events
         /// </summary>
         /// <param name="e">The CommandEventArgs of the run command</param>
         public delegate void CommandEventHandler(CommandEventArgs e);
 
         /// <summary>
-        /// Creates a new CommandDispatcher
+        ///     Creates a new CommandDispatcher
         /// </summary>
         public CommandDispatcher() {
             Commands = new Dictionary<string, Command>();
         }
 
         /// <summary>
-        /// A dictionary of all commands where the key is the command name and the value is the Command object
+        ///     A dictionary of all commands where the key is the command name and the value is the Command object
         /// </summary>
         public Dictionary<string, Command> Commands { get; private set; }
 
         /// <summary>
-        /// Registers a command to be handled by the dispatcher
+        ///     Registers a command to be handled by the dispatcher
         /// </summary>
         /// <param name="cmd">The Command object</param>
         /// <param name="overwrite">Whether or not we should overwrite an existing command</param>
@@ -41,11 +40,11 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Model for a command arugments
+        ///     Model for a command arugments
         /// </summary>
         public class CommandArgument {
             /// <summary>
-            /// Creates a new CommandArgument from name, description and type
+            ///     Creates a new CommandArgument from name, description and type
             /// </summary>
             /// <param name="name">The name of the argument</param>
             /// <param name="desc">The description of the argument</param>
@@ -57,25 +56,27 @@ namespace DeveloperConsole {
             }
 
             /// <summary>
-            /// The type the argument should return
+            ///     The type the argument should return
             /// </summary>
             public Type Type { get; private set; }
+
             /// <summary>
-            /// The name of the argument
+            ///     The name of the argument
             /// </summary>
             public string Name { get; private set; }
+
             /// <summary>
-            /// The description of the argument
+            ///     The description of the argument
             /// </summary>
             public string Description { get; private set; }
         }
 
         /// <summary>
-        /// Model for commands
+        ///     Model for commands
         /// </summary>
         public class Command {
             /// <summary>
-            /// Creates a new Command
+            ///     Creates a new Command
             /// </summary>
             /// <param name="cmd">The name of the command</param>
             /// <param name="desc">The description of the command</param>
@@ -90,7 +91,7 @@ namespace DeveloperConsole {
             }
 
             /// <summary>
-            /// Creates a new Command
+            ///     Creates a new Command
             /// </summary>
             /// <param name="cmd">The name of the command</param>
             /// <param name="desc">The description of the command</param>
@@ -103,24 +104,27 @@ namespace DeveloperConsole {
             }
 
             /// <summary>
-            /// The CommandEventHandler delegate to callback to
+            ///     The CommandEventHandler delegate to callback to
             /// </summary>
             public CommandEventHandler Callback { get; private set; }
+
             /// <summary>
-            /// A list of a list of expected command arguments where each outer list is a new argument set
+            ///     A list of a list of expected command arguments where each outer list is a new argument set
             /// </summary>
             public List<List<CommandArgument>> ExpectedArgs { get; private set; }
+
             /// <summary>
-            /// The name of the command
+            ///     The name of the command
             /// </summary>
             public string Name { get; private set; }
+
             /// <summary>
-            /// The description of the command
+            ///     The description of the command
             /// </summary>
             public string Description { get; private set; }
 
             /// <summary>
-            /// Adds an argument set to the command
+            ///     Adds an argument set to the command
             /// </summary>
             /// <param name="args">A list of CommandArguments for this set</param>
             /// <returns>The argument set ID</returns>
@@ -132,11 +136,11 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Model for command event arguments
+        ///     Model for command event arguments
         /// </summary>
         public class CommandEventArgs {
             /// <summary>
-            /// Creates a CommandEventArgs
+            ///     Creates a CommandEventArgs
             /// </summary>
             /// <param name="cmd">The name of the command</param>
             /// <param name="tokens">The command tokens in the order in which they were passed</param>
@@ -148,15 +152,17 @@ namespace DeveloperConsole {
             }
 
             /// <summary>
-            /// The argument set index
+            ///     The argument set index
             /// </summary>
             public int ArgIndex { get; set; }
+
             /// <summary>
-            /// The command tokens in the order in which they were passed
+            ///     The command tokens in the order in which they were passed
             /// </summary>
             public List<CommandToken> Tokens { get; private set; }
+
             /// <summary>
-            /// The name of the command
+            ///     The name of the command
             /// </summary>
             public string CommandName { get; private set; }
         }

@@ -10,11 +10,11 @@ using Control = GTA.Control;
 using Font = GTA.Font;
 
 /// <summary>
-/// Extends the GTA.Script class
+///     Extends the GTA.Script class
 /// </summary>
 public static class ScriptExtender {
     /// <summary>
-    /// Register this script with the console
+    ///     Register this script with the console
     /// </summary>
     /// <param name="s">The script to register</param>
     /// <param name="c">The console attached callback</param>
@@ -25,7 +25,7 @@ public static class ScriptExtender {
 
 namespace DeveloperConsole {
     /// <summary>
-    /// The console model
+    ///     The console model
     /// </summary>
     public class DeveloperConsole : Script {
         public delegate void OnConsoleAttached(DeveloperConsole developerConsole);
@@ -43,17 +43,19 @@ namespace DeveloperConsole {
         private bool _isHidden;
         private int _lastBlinkTime;
         private int _lineOffset;
+
         /// <summary>
-        /// Whether or not console debug is enabled
+        ///     Whether or not console debug is enabled
         /// </summary>
         public bool Debug = true;
+
         /// <summary>
-        /// The consoles input text
+        ///     The consoles input text
         /// </summary>
         public string Input = "";
 
         /// <summary>
-        /// Creates the console
+        ///     Creates the console
         /// </summary>
         public DeveloperConsole() {
             InjectToGAC();
@@ -73,21 +75,24 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// The object selector used by this console
+        ///     The object selector used by this console
         /// </summary>
         public ObjectSelector ObjectSelector { get; private set; }
+
         /// <summary>
-        /// The command dispatcher used by this console
+        ///     The command dispatcher used by this console
         /// </summary>
         public CommandDispatcher CommandDispatcher { get; private set; }
+
         /// <summary>
-        /// The current console instance
+        ///     The current console instance
         /// </summary>
         public static DeveloperConsole Instance { get; private set; }
 
         // ReSharper disable once ConvertToAutoProperty
         /// <summary>
-        /// The list of scripts registered with the console where the key is the script object and the value is the console attached callback
+        ///     The list of scripts registered with the console where the key is the script object and the value is the console
+        ///     attached callback
         /// </summary>
         public static List<KeyValuePair<Script, OnConsoleAttached>> RegisteredScripts {
             get { return _registeredScripts; }
@@ -95,7 +100,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Inject our assembly to the Global Assembly Cache so all scripts have access to it
+        ///     Inject our assembly to the Global Assembly Cache so all scripts have access to it
         /// </summary>
         private void InjectToGAC() {
             //Allows other scripts to access us
@@ -104,7 +109,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Register a script with the console
+        ///     Register a script with the console
         /// </summary>
         /// <param name="s">The script to register</param>
         /// <param name="c">The console attached callback delegate</param>
@@ -116,7 +121,7 @@ namespace DeveloperConsole {
         #region Handle Console
 
         /// <summary>
-        /// Handles key presses
+        ///     Handles key presses
         /// </summary>
         /// <param name="sender">The object sending the event</param>
         /// <param name="e">The event arguments</param>
@@ -161,7 +166,12 @@ namespace DeveloperConsole {
                     goto default;
                 case Keys.V:
                     if ((e.Modifiers & Keys.Control) == Keys.Control) {
-                        var t = new Thread(delegate() { Input = Input.Insert(Input.Length - _inputOffset, Clipboard.GetText(TextDataFormat.Text)); });
+                        var t =
+                            new Thread(
+                                delegate() {
+                                    Input = Input.Insert(Input.Length - _inputOffset,
+                                        Clipboard.GetText(TextDataFormat.Text));
+                                });
                         t.SetApartmentState(ApartmentState.STA);
                         t.Start();
                         t.Join();
@@ -202,7 +212,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// This method is called every game tick
+        ///     This method is called every game tick
         /// </summary>
         /// <param name="sender">The object sending the event</param>
         /// <param name="e">The event arguments</param>
@@ -241,7 +251,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Draws the console on screen
+        ///     Draws the console on screen
         /// </summary>
         private void DrawConsole() {
             if (!_isHidden) {
@@ -328,7 +338,7 @@ namespace DeveloperConsole {
         #region Console Functions
 
         /// <summary>
-        /// Prints the man page for a specified command to the console
+        ///     Prints the man page for a specified command to the console
         /// </summary>
         /// <param name="cmd">The command to print info for</param>
         public void PrintCommandInfo(CommandDispatcher.Command cmd) {
@@ -344,7 +354,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Prints the man page for a specified command to the console
+        ///     Prints the man page for a specified command to the console
         /// </summary>
         /// <param name="cmd">The name of the command to print info for</param>
         public void PrintCommandInfo(string cmd) {
@@ -353,7 +363,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Prints a warning line to the console
+        ///     Prints a warning line to the console
         /// </summary>
         /// <param name="s">The message</param>
         public void PrintWarning(string s) {
@@ -362,7 +372,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Prints an error line to the console
+        ///     Prints an error line to the console
         /// </summary>
         /// <param name="s">The message</param>
         public void PrintError(string s) {
@@ -370,7 +380,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Prints a debug line to the console if Debug is true
+        ///     Prints a debug line to the console if Debug is true
         /// </summary>
         /// <param name="s">The message</param>
         public void PrintDebug(string s) {
@@ -380,7 +390,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Prints a line to the console
+        ///     Prints a line to the console
         /// </summary>
         /// <param name="s">The message</param>
         /// <param name="c">The color of the line</param>
@@ -390,7 +400,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Prints a line to the console with the default text color
+        ///     Prints a line to the console with the default text color
         /// </summary>
         /// <param name="s">The message</param>
         public void PrintLine(string s) {
@@ -398,7 +408,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Clears all the lines in the console
+        ///     Clears all the lines in the console
         /// </summary>
         public void ClearLines() {
             _lines.Clear();
@@ -406,7 +416,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Removes the last line of the console
+        ///     Removes the last line of the console
         /// </summary>
         public void RemoveLastLine() {
             _lines.RemoveAt(_lines.Count - 1);
@@ -417,7 +427,7 @@ namespace DeveloperConsole {
         #region Input Commands
 
         /// <summary>
-        /// Scroll the console up
+        ///     Scroll the console up
         /// </summary>
         private void ScrollUp() {
             var newOffset = _lines.Count - ConsoleSettings.NumLines + _lineOffset - 1;
@@ -425,7 +435,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Scroll the console down
+        ///     Scroll the console down
         /// </summary>
         private void ScrollDown() {
             var newOffset = _lines.Count - ConsoleSettings.NumLines + _lineOffset + 1;
@@ -433,17 +443,17 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Set the input line to the last item in input history
+        ///     Set the input line to the last item in input history
         /// </summary>
         private void LastInput() {
             _inputOffset = 0;
             if (_historyCursor < _inputHistory.Count - 1) _historyCursor++;
-            if(_inputHistory.Count > 0) Input = _inputHistory[_historyCursor];
+            if (_inputHistory.Count > 0) Input = _inputHistory[_historyCursor];
         }
 
         /// <summary>
-        /// Set the input line to the next item in input history
-        /// If no next line in input history, clears input
+        ///     Set the input line to the next item in input history
+        ///     If no next line in input history, clears input
         /// </summary>
         private void NextInput() {
             _inputOffset = 0;
@@ -458,21 +468,21 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Move the cursor to the left 1 character
+        ///     Move the cursor to the left 1 character
         /// </summary>
         private void CursorLeft() {
             if (_inputOffset < Input.Length) _inputOffset++;
         }
 
         /// <summary>
-        /// Move the cursor to the right 1 character
+        ///     Move the cursor to the right 1 character
         /// </summary>
         private void CursorRight() {
             if (_inputOffset > 0) _inputOffset--;
         }
 
         /// <summary>
-        /// Delete 1 character before the cursor
+        ///     Delete 1 character before the cursor
         /// </summary>
         private void BackSpace() {
             if (Input.Length - _inputOffset > 0) Input = Input.Remove(Input.Length - _inputOffset - 1, 1);
@@ -480,7 +490,7 @@ namespace DeveloperConsole {
 
 
         /// <summary>
-        /// Delete 1 character after the cursor
+        ///     Delete 1 character after the cursor
         /// </summary>
         private void Del() {
             if (Input.Length > 0) {
@@ -490,7 +500,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Run the command string from the input line
+        ///     Run the command string from the input line
         /// </summary>
         private void RunCommand() {
             var cmd = Input;
@@ -561,7 +571,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Show the console
+        ///     Show the console
         /// </summary>
         /// <param name="show">Whether or not the console should be shown</param>
         public void ShowConsole(bool show) {
@@ -575,7 +585,7 @@ namespace DeveloperConsole {
         #region Utils
 
         /// <summary>
-        /// Breaks a large string up into multiple UIText objects
+        ///     Breaks a large string up into multiple UIText objects
         /// </summary>
         /// <param name="s">The input string</param>
         /// <param name="p">The draw point</param>
@@ -596,7 +606,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Splits a string up into chunks of a specified size
+        ///     Splits a string up into chunks of a specified size
         /// </summary>
         /// <param name="str">The string to splait</param>
         /// <param name="chunkSize">The desired chunk size</param>

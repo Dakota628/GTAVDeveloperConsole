@@ -6,7 +6,7 @@ using GTA;
 
 namespace DeveloperConsole {
     /// <summary>
-    /// The object selector
+    ///     The object selector
     /// </summary>
     public class ObjectSelector {
         private readonly float _maxDist = 10000;
@@ -14,23 +14,24 @@ namespace DeveloperConsole {
         private Entity _selectedEntity;
 
         /// <summary>
-        /// Creates an ObjectSelector
+        ///     Creates an ObjectSelector
         /// </summary>
         public ObjectSelector() {
             Enabled = false;
         }
 
         /// <summary>
-        /// A dictionary of entities where the key is the entities handle and the value is the entity
+        ///     A dictionary of entities where the key is the entities handle and the value is the entity
         /// </summary>
         public SortedDictionary<int, Entity> Entities { get; private set; }
+
         /// <summary>
-        /// Where or not the object selector is enabled
+        ///     Where or not the object selector is enabled
         /// </summary>
         public bool Enabled { get; set; }
 
         /// <summary>
-        /// This method should be called each tick
+        ///     This method should be called each tick
         /// </summary>
         public void Tick() {
             if (_selectedEntity != null && !_selectedEntity.Exists()) _selectedEntity = null;
@@ -39,11 +40,12 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Calls the object selector
+        ///     Calls the object selector
         /// </summary>
         public void Draw() {
             if (Enabled) {
-                UI.ShowSubtitle("Press Tab to cycle between objects.\nPress Ctl+Tab to select the object highlighted in red.", 1);
+                UI.ShowSubtitle(
+                    "Press Tab to cycle between objects.\nPress Ctl+Tab to select the object highlighted in red.", 1);
                 GTAFuncs.ShowCursorThisFrame();
                 GTAFuncs.DisplayHud(false);
                 GTAFuncs.DisplayRadar(false);
@@ -56,7 +58,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Handles keypresses, should be called from the scripts KeyDown event
+        ///     Handles keypresses, should be called from the scripts KeyDown event
         /// </summary>
         /// <param name="sender">The object sending the event</param>
         /// <param name="e">The event arguments</param>
@@ -95,7 +97,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Gets the next entity in the object selector
+        ///     Gets the next entity in the object selector
         /// </summary>
         /// <returns>The next entity</returns>
         private Entity GetNextEntity() {
@@ -110,7 +112,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Draw all the entities we can see
+        ///     Draw all the entities we can see
         /// </summary>
         private void DrawEnts() {
             var textScale = .25f;
@@ -170,7 +172,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Draws a box around the specified entity
+        ///     Draws a box around the specified entity
         /// </summary>
         /// <param name="e">The entity to draw around</param>
         /// <param name="c">The box color</param>

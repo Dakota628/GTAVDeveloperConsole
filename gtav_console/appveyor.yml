@@ -17,9 +17,10 @@ artifacts:
   name: DeveloperConsole
 deploy:
 - provider: GitHub
-  tag: DeveloperConsole-$(appveyor_build_version)
+  tag: DeveloperConsole $(appveyor_build_version)
   auth_token:
-    secure: fW4+xGMVkktiqt6NDLnLhzgseWmXzy+xGWWpJ1h5aLe3bM5IiRYZXRF+OziE0tn5
+    secure: fImWdiSkkwnA/2jUFFlZhNTkP355qYu90e2YsDUNT5vfEoigKYfoALUaSIuuDgPs
   artifact: DeveloperConsole
+  prerelease: true
   on:
     branch: master

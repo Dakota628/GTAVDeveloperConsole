@@ -17,7 +17,7 @@ namespace DeveloperConsole {
 
         public static void SetEntityProofs(Entity e, bool b1, bool b2, bool b3, bool b4, bool b5, bool b6, bool b7,
             bool b8) {
-                Function.Call(Hash.SET_ENTITY_PROOFS, e, b1, b2, b3, b4, b5, b6, b7, b8);
+            Function.Call(Hash.SET_ENTITY_PROOFS, e, b1, b2, b3, b4, b5, b6, b7, b8);
         }
 
         public static void SetEntityLoadColissionFlag(Entity e, bool b) {
@@ -25,11 +25,11 @@ namespace DeveloperConsole {
         }
 
         public static void SetEntityGravity(Entity e, bool b) {
-            Function.Call(Hash.SET_ENTITY_HAS_GRAVITY,e.Handle, false);
+            Function.Call(Hash.SET_ENTITY_HAS_GRAVITY, e.Handle, b);
         }
 
         public static float GetControlNormal(Control c) {
-            return Function.Call<float>(Hash.GET_CONTROL_NORMAL, 0, (int)c);
+            return Function.Call<float>(Hash.GET_CONTROL_NORMAL, 0, (int) c);
         }
 
         public static int GetControlValue(Control c) {
@@ -37,7 +37,8 @@ namespace DeveloperConsole {
         }
 
         public static bool IsControlPressedIgnoreDisabled(Control c) {
-            return Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED, 0, (int) c) || Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int) c);
+            return Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED, 0, (int) c) ||
+                   Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int) c);
         }
 
         public static void SetTextEdge(int i, Color c) {

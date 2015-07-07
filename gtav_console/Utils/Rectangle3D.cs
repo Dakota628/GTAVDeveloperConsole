@@ -7,11 +7,11 @@ using Quaternion = GTA.Math.Quaternion;
 
 namespace DeveloperConsole {
     /// <summary>
-    /// Represents a 3D line
+    ///     Represents a 3D line
     /// </summary>
     public class Line3D {
         /// <summary>
-        /// Create a Line3D
+        ///     Create a Line3D
         /// </summary>
         /// <param name="p1">The first point in the line</param>
         /// <param name="p2">The second point in the line</param>
@@ -21,11 +21,12 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// The first point in the line
+        ///     The first point in the line
         /// </summary>
         public Vector3 Point1 { get; private set; }
+
         /// <summary>
-        /// The second point in the line
+        ///     The second point in the line
         /// </summary>
         public Vector3 Point2 { get; private set; }
 
@@ -36,11 +37,11 @@ namespace DeveloperConsole {
     }
 
     /// <summary>
-    /// Represents a 3D face
+    ///     Represents a 3D face
     /// </summary>
     public class Face3D {
         /// <summary>
-        /// Create a Face3D
+        ///     Create a Face3D
         /// </summary>
         /// <param name="bottomLeft">The bottom left corner of the face</param>
         /// <param name="topRight">The top right corner of the face</param>
@@ -54,24 +55,28 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// The bottom left corner of the face
+        ///     The bottom left corner of the face
         /// </summary>
         public Vector3 BottomLeft { get; private set; }
+
         /// <summary>
-        /// The top right corner of the face
-        /// </summary>a
+        ///     The top right corner of the face
+        /// </summary>
+        /// a
         public Vector3 TopRight { get; private set; }
+
         /// <summary>
-        /// The top left corner of the face
+        ///     The top left corner of the face
         /// </summary>
         public Vector3 TopLeft { get; private set; }
+
         /// <summary>
-        /// The bottom right corner of the face
+        ///     The bottom right corner of the face
         /// </summary>
         public Vector3 BottomRight { get; private set; }
 
         /// <summary>
-        /// Draws the face
+        ///     Draws the face
         /// </summary>
         /// <param name="c">The color of the face</param>
         public void Draw(Color c) {
@@ -80,11 +85,11 @@ namespace DeveloperConsole {
     }
 
     /// <summary>
-    /// Represents a 3D Rectangle
+    ///     Represents a 3D Rectangle
     /// </summary>
     public class Rectangle3D {
         /// <summary>
-        /// Create a Rectangle3D
+        ///     Create a Rectangle3D
         /// </summary>
         /// <param name="pos">The bottom left front position of the rectangle</param>
         /// <param name="size">The size of the rectangle</param>
@@ -109,32 +114,37 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// The bottom left front position of the rectangle
+        ///     The bottom left front position of the rectangle
         /// </summary>
         public Vector3 Position { get; private set; }
+
         /// <summary>
-        /// The size of the rectangle
+        ///     The size of the rectangle
         /// </summary>
         public Vector3 Size { get; private set; }
+
         /// <summary>
-        /// The center of the rectangle
+        ///     The center of the rectangle
         /// </summary>
         public Vector3 Center { get; private set; }
+
         /// <summary>
-        /// The corners of the rectangle where the string is the corner vector and the value is the location of the corner
+        ///     The corners of the rectangle where the string is the corner vector and the value is the location of the corner
         /// </summary>
         public Dictionary<string, Vector3> Corners { get; private set; }
+
         /// <summary>
-        /// The edges of the rectangle
+        ///     The edges of the rectangle
         /// </summary>
         public List<Line3D> Edges { get; private set; }
+
         /// <summary>
-        /// The faces of the rectangle
+        ///     The faces of the rectangle
         /// </summary>
         public List<Face3D> Faces { get; private set; }
 
         /// <summary>
-        /// Generate the edges of the rectangle, should be called when modifying corners
+        ///     Generate the edges of the rectangle, should be called when modifying corners
         /// </summary>
         private void GenerateEdges() {
             Edges = new List<Line3D> {
@@ -153,9 +163,8 @@ namespace DeveloperConsole {
             };
         }
 
-
         /// <summary>
-        /// Generate the faces of the rectangl, should be called when modifying corners
+        ///     Generate the faces of the rectangl, should be called when modifying corners
         /// </summary>
         private void GenerateFaces() {
             Faces = new List<Face3D> {
@@ -169,7 +178,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Rotate the rectangle by a quaternion
+        ///     Rotate the rectangle by a quaternion
         /// </summary>
         /// <param name="rot">The quaternion to rotate by</param>
         /// <returns>The current rectangle instance</returns>
@@ -186,7 +195,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Draw the rectangles wireframe without diagonals
+        ///     Draw the rectangles wireframe without diagonals
         /// </summary>
         /// <param name="c">The color of the wire frame</param>
         /// <returns>The current rectangle instance</returns>
@@ -195,7 +204,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Draw the rectangles wireframe
+        ///     Draw the rectangles wireframe
         /// </summary>
         /// <param name="c">The color of the wireframe</param>
         /// <param name="diagonals">Whether or not to draw diagonals</param>
@@ -212,7 +221,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Draw all the rectangle
+        ///     Draw all the rectangle
         /// </summary>
         /// <param name="c">The color of the rectangle</param>
         /// <returns>The current rectangle instance</returns>
@@ -222,7 +231,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Converts a Point3D to a Vector3
+        ///     Converts a Point3D to a Vector3
         /// </summary>
         /// <param name="p">The Point3D</param>
         /// <returns>The Vector3</returns>
@@ -231,7 +240,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Converts a Vector3 to a Point3D
+        ///     Converts a Vector3 to a Point3D
         /// </summary>
         /// <param name="v">The Vector3</param>
         /// <returns>The Point3D</returns>

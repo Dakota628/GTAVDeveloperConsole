@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
@@ -12,8 +11,8 @@ namespace DeveloperConsole {
         private CommandDispatcher _commandDispatcher;
         private DeveloperConsole _developerConsole;
         private bool _godEnabled;
-        private bool _noClipEnabled;
         private Blip _lastWaypoint;
+        private bool _noClipEnabled;
         private Player _player;
 
         public DefaultCommands() {
@@ -54,8 +53,6 @@ namespace DeveloperConsole {
             if (GTAFuncs.IsWaypointActive())
                 _lastWaypoint = new Blip(GTAFuncs.GetFirstBlipInfoID((int) BlipSprite.Waypoint));
 
-            _developerConsole.PrintDebug("MoveUp: " + GTAFuncs.GetControlNormal(Control.MoveUp));
-
             if (_noClipEnabled) {
                 Game.Player.Character.Rotation = GameplayCamera.Rotation;
 
@@ -70,27 +67,29 @@ namespace DeveloperConsole {
                 GTAFuncs.DisableControlAction(Control.Attack, true);
                 GTAFuncs.DisableControlAction(Control.Aim, true);
 
-                bool pressed = false;
-                Vector3 v = new Vector3(0, 0, 0);
+                var v = new Vector3(0, 0, 0);
 
                 if (Game.Player.Character.IsInVehicle() || Game.Player.Character.IsSittingInVehicle())
                     Game.Player.Character.Position = Game.Player.Character.Position;
 
                 if (GTAFuncs.GetControlNormal(Control.MoveUp) != 0) {
-                    v  += Vector3.Multiply(Game.Player.Character.ForwardVector, -25 * GTAFuncs.GetControlNormal(Control.MoveUp));
+                    v += Vector3.Multiply(Game.Player.Character.ForwardVector,
+                        -25*GTAFuncs.GetControlNormal(Control.MoveUp));
                 }
                 if (GTAFuncs.GetControlNormal(Control.MoveRight) != 0) {
-                     v += Vector3.Multiply(Game.Player.Character.RightVector, 25 * GTAFuncs.GetControlNormal(Control.MoveRight));
+                    v += Vector3.Multiply(Game.Player.Character.RightVector,
+                        25*GTAFuncs.GetControlNormal(Control.MoveRight));
                 }
                 if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.Attack)) {
-                    v += Vector3.Multiply(Game.Player.Character.UpVector, 25);
+                    v += Vector3.Multiply(Game.Player.Character.UpVector, 15);
                 }
                 if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.Aim)) {
-                    v += Vector3.Multiply(Game.Player.Character.UpVector, -25);
+                    v += Vector3.Multiply(Game.Player.Character.UpVector, -15);
                 }
 
                 Game.Player.Character.Velocity = v;
-            } else {
+            }
+            else {
                 GTAFuncs.EnableControlAction(Control.MoveUp, true);
                 GTAFuncs.EnableControlAction(Control.MoveDown, true);
                 GTAFuncs.EnableControlAction(Control.MoveLeft, true);
@@ -167,7 +166,7 @@ namespace DeveloperConsole {
                 DefaultCommandEventHandler);
 
             noclip.AddArgumentSet(
-                new CommandDispatcher.CommandArgument("active", "Whether or not noclip should be active", typeof(bool))
+                new CommandDispatcher.CommandArgument("active", "Whether or not noclip should be active", typeof (bool))
                 );
 
             _commandDispatcher.RegisterCommand(noclip, true);
@@ -336,7 +335,7 @@ namespace DeveloperConsole {
                     GodCommand((bool) e.Tokens[0].Eval);
                     break;
                 case "noclip":
-                    NoclipCommand((bool)e.Tokens[0].Eval);
+                    NoclipCommand((bool) e.Tokens[0].Eval);
                     break;
                 case "tp":
                     switch (e.ArgIndex) {
@@ -580,7 +579,7 @@ namespace DeveloperConsole {
         private void WeaponsCommand() {
             var p = Game.Player.Character;
             var initialWeapon = p.Weapons.Current;
-            foreach (WeaponHash w in Enum.GetValues(typeof(WeaponHash)).Cast<WeaponHash>().ToList()) {
+            foreach (var w in Enum.GetValues(typeof (WeaponHash)).Cast<WeaponHash>().ToList()) {
                 p.Weapons.Give(w, 0, true, true);
                 var currentWeapon = p.Weapons.Current;
                 currentWeapon.Ammo = currentWeapon.MaxAmmo;
@@ -590,14 +589,14 @@ namespace DeveloperConsole {
 
         #endregion
 
-
         #region Gtfo
 
         private void GtfoCommand() {
             var p = Game.Player.Character;
-            Vehicle v = World.CreateVehicle(new Model(VehicleHash.Lazer), p.Position + new Vector3(0, 0, 500));
+            var v = World.CreateVehicle(new Model(VehicleHash.Lazer), p.Position + new Vector3(0, 0, 500));
             v.EngineRunning = true;
-            v.Heading = p.Heading;;
+            v.Heading = p.Heading;
+            ;
             v.Velocity = Vector3.Multiply(v.ForwardVector, 100);
             v.Speed = 200;
             p.SetIntoVehicle(v, VehicleSeat.Driver);

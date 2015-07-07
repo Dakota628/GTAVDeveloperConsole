@@ -9,7 +9,7 @@ namespace DeveloperConsole {
         public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         /// <summary>
-        /// Gets a string from the data from a key press
+        ///     Gets a string from the data from a key press
         /// </summary>
         /// <param name="keys">The pressed Keys</param>
         /// <param name="shift">Whether or not shift was held</param>
@@ -31,7 +31,7 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        /// Check if GTA is running and in the foreground
+        ///     Check if GTA is running and in the foreground
         /// </summary>
         /// <returns>Whether or not GTA is in the foreground</returns>
         internal static bool ApplicationIsActivated() {
