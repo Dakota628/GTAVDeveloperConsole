@@ -1,5 +1,7 @@
 ﻿# GTAV Developer Console
 
+[![Build status](https://ci.appveyor.com/api/projects/status/j2rdecf0ccwtmjbn?svg=true)](https://ci.appveyor.com/project/Dakota628/gtavdeveloperconsole)
+
 ### Screenshots:
 Console:
 ![console](https://cloud.githubusercontent.com/assets/1666312/8538530/431cab4a-243b-11e5-8546-2ddfada3ef6d.png)
