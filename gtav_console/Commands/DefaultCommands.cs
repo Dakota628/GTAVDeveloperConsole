@@ -29,7 +29,7 @@ namespace DeveloperConsole {
 
             RegisterDefaultCommands();
 
-            dc.PrintDebug("DefaultCommands loaded successfully.");
+            //dc.PrintDebug("DefaultCommands loaded successfully.");
         }
 
         private void OnTick(object sender, EventArgs e) {

@@ -270,8 +270,6 @@ namespace DeveloperConsole {
             if (topRight.X == -UI.WIDTH || topRight.Y == -UI.HEIGHT) topRight = new Vector2(Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["010"]).X), 0);
             if (topRight.X == -UI.WIDTH || topRight.Y == -UI.HEIGHT) return new Rectangle(-1, -1, -1, -1);
 
-            DeveloperConsole.Instance.PrintDebug(topRight + " " + bottomLeft);
-
             Vector2 size = topRight - bottomLeft;
 
             return new Rectangle(new Point((int)bottomLeft.X, (int)bottomLeft.Y), new Size((int)size.X, (int)size.Y));
