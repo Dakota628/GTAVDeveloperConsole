@@ -84,7 +84,7 @@ namespace DeveloperConsole {
         public void Draw() {
             if (Enabled) {
                 UI.ShowSubtitle(
-                    "Use the mouse and click and entity.\n Or Press Tab to cycle between objects.\nPress Ctl+Tab to select the object highlighted in red.", 1);
+                    "Use the mouse and click an entity.\n Or Press Tab to cycle between objects.\nPress Ctl+Tab to select the object highlighted in red.", 1);
                 GTAFuncs.DisplayHud(false);
                 GTAFuncs.DisplayRadar(false);
                 DrawEnts();
