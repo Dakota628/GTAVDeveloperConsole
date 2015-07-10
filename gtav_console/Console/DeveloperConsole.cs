@@ -195,14 +195,14 @@ namespace DeveloperConsole {
                     break;
                 default:
                     _historyCursor = -1;
-                    var s = WinAPI.GetCharsFromKeys(e.KeyData, (e.Modifiers & Keys.Shift) == Keys.Shift,
+                    var s = NativeMethods.GetCharsFromKeys(e.KeyData, (e.Modifiers & Keys.Shift) == Keys.Shift,
                         (e.Modifiers & Keys.Alt) == Keys.Alt);
                     if (s != null) {
                         var c = s[0];
-                        if ((WinAPI.GetKeyState(VkCapital) & 0x8000) == 0x8000 ||
-                            (WinAPI.GetKeyState(VkCapital) & 1) == 1 && char.IsLetter(c))
+                        if ((NativeMethods.GetKeyState(VkCapital) & 0x8000) == 0x8000 ||
+                            (NativeMethods.GetKeyState(VkCapital) & 1) == 1 && char.IsLetter(c))
                             c = char.IsUpper(c) ? char.ToLower(c) : char.ToUpper(c);
-                        if (WinAPI.ApplicationIsActivated() && !char.IsControl(c))
+                        if (NativeMethods.ApplicationIsActivated() && !char.IsControl(c))
                             Input = Input.Insert(Input.Length - _inputOffset, char.ToString(c));
                     }
                     break;
