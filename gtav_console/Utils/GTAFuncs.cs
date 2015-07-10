@@ -1,12 +1,101 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq.Expressions;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Control = GTA.Control;
 using Font = GTA.Font;
 
 namespace DeveloperConsole {
     public static class GTAFuncs {
+        public static Vector2 ValidateScreenPoint(Vector2 v) {
+            if (v.X > UI.WIDTH) v.X = UI.WIDTH;
+            else if (v.X < 0) v.X = 0;
+            if (v.Y > UI.HEIGHT) v.Y = UI.HEIGHT;
+            else if (v.Y < 0) v.Y = 0;
+            return v;
+        }
+
+        public static bool IsLeftMouseClicked() {
+            return IsControlPressed(Control.CursorAccept);
+        }
+
+        public static bool IsRightMouseClicked() {
+            return IsControlPressed(Control.CursorCancel);
+        }
+
+        public static bool IsSelectPressed() {
+            return IsControlPressed(Control.ScriptSelect);
+        }
+
+        public static Vector2 GetLeftStick() {
+            return GetControlPoint(Control.ScriptLeftAxisX, Control.ScriptLeftAxisY);
+        }
+
+        public static Vector2 GetRightStick() {
+            return GetControlPoint(Control.ScriptRightAxisX, Control.ScriptRightAxisY);
+        }
+
+        public static Point GetMousePos() {
+            bool x = IsControlEnabled(Control.CursorX);
+            bool y = IsControlEnabled(Control.CursorY);
+
+            SetControlAction(Control.CursorX, true);
+            SetControlAction(Control.CursorY, true);
+
+            Point ret = new Point((int) (GetControlNormal(Control.CursorX) * UI.WIDTH), (int)(GetControlNormal(Control.CursorY) * UI.HEIGHT));
+
+            SetControlAction(Control.CursorX, x);
+            SetControlAction(Control.CursorY, y);
+            return ret;
+        }
+
+        public static bool IsControlPressed(Control c) {
+            bool e = IsControlEnabled(c);
+            SetControlAction(c, true);
+            bool ret = GetControlNormal(c) > 0;
+            SetControlAction(c, e);
+            return ret;
+        }
+
+        public static Vector2 GetControlPoint(Control c1, Control c2) {
+            bool b1 = IsControlEnabled(c1);
+            bool b2 = IsControlEnabled(c2);
+
+            SetControlAction(c1, true);
+            SetControlAction(c2, true);
+
+            Vector2 ret = new Vector2((int)GetControlNormal(c1), (int)GetControlNormal(c2));
+
+            SetControlAction(c1, b2);
+            SetControlAction(c2, b2);
+            return ret;
+        }
+
+        public static Vector2 GetMoveInputVector() {
+            Ped p = Game.Player.Character;
+            Control upDown = Control.MoveUpDown;
+            Control leftRight = Control.MoveLeftRight;
+            return new Vector2(GetControlNormal(leftRight), GetControlNormal(upDown));
+        }
+
+        public static Vector2 GetLookInputVector() {
+            Ped p = Game.Player.Character;
+            Control upDown = Control.LookUpDown;
+            Control leftRight = Control.LookLeftRight;
+            return new Vector2(GetControlNormal(leftRight), GetControlNormal(upDown));
+        }
+
+        private static void SetControlAction(Control c, bool b) {
+            if (b) EnableControlAction(c, true);
+            else DisableControlAction(c, true);
+        }
+
+        public static bool IsControlEnabled(Control c) {
+            return Function.Call<bool>(Hash.IS_CONTROL_ENABLED, 0, (int)c);
+        }
+
         public static void SetEntityRecordsCollisions(Entity e, bool b) {
             Function.Call(Hash.SET_ENTITY_RECORDS_COLLISIONS, e, b);
         }
@@ -92,7 +181,7 @@ namespace DeveloperConsole {
             Function.Call(Hash.DISPLAY_HUD, b);
         }
 
-        public static void ShowCursorThisFrame() {
+        public static void ShowMouseThisFrame() {
             Function.Call(Hash._SHOW_CURSOR_THIS_FRAME);
         }
 

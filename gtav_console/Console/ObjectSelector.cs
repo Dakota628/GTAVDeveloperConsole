@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using GTA;
+using GTA.Math;
 
 namespace DeveloperConsole {
     /// <summary>
@@ -26,6 +28,11 @@ namespace DeveloperConsole {
         public SortedDictionary<int, Entity> Entities { get; private set; }
 
         /// <summary>
+        ///     A dictionary of entity click boxes where the value is the entities click box handle and the key is the entity
+        /// </summary>
+        public Dictionary<Entity, Rectangle> EntityClickBoxes { get; private set; }
+
+        /// <summary>
         ///     Where or not the object selector is enabled
         /// </summary>
         public bool Enabled { get; set; }
@@ -36,7 +43,39 @@ namespace DeveloperConsole {
         public void Tick() {
             if (_selectedEntity != null && !_selectedEntity.Exists()) _selectedEntity = null;
 
+            HandleMouse();
             Draw();
+        }
+
+        /// <summary>
+        /// Handles mouse/rightjoystick input
+        /// </summary>
+        private void HandleMouse() {
+            if (Enabled) {
+                GTAFuncs.ShowMouseThisFrame();
+
+                Point pt = GTAFuncs.GetMousePos();
+
+                if (EntityClickBoxes != null) {
+                    foreach (var v in EntityClickBoxes) {
+                        Rectangle r = v.Value;
+                        if (r.IntersectsWith(new Rectangle(pt.X, pt.Y, 1, 1))) {
+                            _selectedEntity = v.Key;
+                            _lastHandle = _selectedEntity.Handle;
+                        }
+                    }
+                }
+
+                if (GTAFuncs.IsLeftMouseClicked()) MouseClick(pt);
+            }
+        }
+
+        /// <summary>
+        /// Called on mouse click
+        /// </summary>
+        /// <param name="pt">The mouse click location</param>
+        private void MouseClick(Point pt) {
+            SelectObject(true);
         }
 
         /// <summary>
@@ -45,8 +84,7 @@ namespace DeveloperConsole {
         public void Draw() {
             if (Enabled) {
                 UI.ShowSubtitle(
-                    "Press Tab to cycle between objects.\nPress Ctl+Tab to select the object highlighted in red.", 1);
-                GTAFuncs.ShowCursorThisFrame();
+                    "Use the mouse and click and entity.\n Or Press Tab to cycle between objects.\nPress Ctl+Tab to select the object highlighted in red.", 1);
                 GTAFuncs.DisplayHud(false);
                 GTAFuncs.DisplayRadar(false);
                 DrawEnts();
@@ -58,6 +96,28 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
+        /// Choose the currently select entity
+        /// </summary>
+        /// <param name="click">Was this issued through click?</param>
+        private void SelectObject(bool click = false) {
+            if(click && _selectedEntity != null || !click) Enabled = false;
+            if (_selectedEntity == null) return;
+            var returnText = "return ";
+            if (DeveloperConsole.Instance.Input.StartsWith("cs")) returnText = "";
+            if (_selectedEntity is Vehicle) {
+                DeveloperConsole.Instance.Input += " {" + returnText + "new Vehicle(" +
+                                                   _selectedEntity.Handle + ")} ";
+            } else if (_selectedEntity is Ped) {
+                DeveloperConsole.Instance.Input += " {" + returnText + "new Ped(" + _selectedEntity.Handle +
+                                                   ")} ";
+            } else {
+                DeveloperConsole.Instance.Input += " {" + returnText + "new Entity(" +
+                                                   _selectedEntity.Handle + ")} ";
+            }
+            DeveloperConsole.Instance.ShowConsole(true);
+        }
+
+        /// <summary>
         ///     Handles keypresses, should be called from the scripts KeyDown event
         /// </summary>
         /// <param name="sender">The object sending the event</param>
@@ -66,23 +126,7 @@ namespace DeveloperConsole {
             if (e.KeyCode == Keys.Tab) {
                 if ((e.Modifiers & Keys.Control) == Keys.Control) {
                     if (Enabled) {
-                        Enabled = false;
-                        if (_selectedEntity == null) return;
-                        var returnText = "return ";
-                        if (DeveloperConsole.Instance.Input.StartsWith("cs")) returnText = "";
-                        if (_selectedEntity is Vehicle) {
-                            DeveloperConsole.Instance.Input += " {" + returnText + "new Vehicle(" +
-                                                               _selectedEntity.Handle + ")} ";
-                        }
-                        else if (_selectedEntity is Ped) {
-                            DeveloperConsole.Instance.Input += " {" + returnText + "new Ped(" + _selectedEntity.Handle +
-                                                               ")} ";
-                        }
-                        else {
-                            DeveloperConsole.Instance.Input += " {" + returnText + "new Entity(" +
-                                                               _selectedEntity.Handle + ")} ";
-                        }
-                        DeveloperConsole.Instance.ShowConsole(true);
+                        SelectObject();
                     }
                     else {
                         Enabled = true;
@@ -121,10 +165,12 @@ namespace DeveloperConsole {
             var selected = Color.FromArgb(255, Color.Red.R, Color.Red.G, Color.Red.B);
 
             Entities = new SortedDictionary<int, Entity>();
+            EntityClickBoxes = new Dictionary<Entity, Rectangle>();
 
             foreach (var p in World.GetNearbyPeds(Game.Player.Character, _maxDist)) {
                 if (p.IsOnScreen && !p.IsOccluded) {
                     Entities.Add(p.Handle, p);
+                    
 
                     var boxColor = Color.FromArgb(150, Color.Yellow);
                     var c = normal;
@@ -136,8 +182,12 @@ namespace DeveloperConsole {
                     }
                     var pos = GTAFuncs.WorldToScreen(p.Position);
                     GTAFuncs.SetTextDropShadow(2, Color.FromArgb(255, 0, 0, 0));
-                    new UIText(prefix + "Ped #" + p.Handle,
+                    String s = prefix + "Ped #" + p.Handle;
+                    Rectangle r = new Rectangle(new Point((int)pos.X - 25, (int)pos.Y + (p.IsInVehicle() ? -10 : 0)), new Size(50, 10));
+
+                    new UIText(s,
                         new Point((int) pos.X, (int) pos.Y + (p.IsInVehicle() ? -10 : 0)), textScale, c, 0, true).Draw();
+                    EntityClickBoxes.Add(p, r);
                     DrawEntBox(p, boxColor);
                 }
             }
@@ -157,13 +207,17 @@ namespace DeveloperConsole {
 
                     var pos = GTAFuncs.WorldToScreen(v.Position);
                     GTAFuncs.SetTextDropShadow(2, Color.FromArgb(255, 0, 0, 0));
-                    new UIText(prefix + "Vehicle #" + v.Handle, new Point((int) pos.X, (int) pos.Y), textScale, c, 0,
+                    String s = prefix + "Vehicle #" + v.Handle;
+                    Rectangle r = new Rectangle(new Point((int) pos.X - 25, (int) pos.Y), new Size(50, 32));
+
+                    new UIText(s, new Point((int) pos.X, (int) pos.Y), textScale, c, 0,
                         true).Draw();
                     GTAFuncs.SetTextDropShadow(2, Color.FromArgb(255, 0, 0, 0));
                     new UIText(v.FriendlyName, new Point((int) pos.X, (int) pos.Y + 10), textScale, c, 0, true).Draw();
                     GTAFuncs.SetTextDropShadow(2, Color.FromArgb(255, 0, 0, 0));
                     new UIText(v.DisplayName + v.Handle, new Point((int) pos.X, (int) pos.Y + 20), textScale, c, 0, true)
                         .Draw();
+                    EntityClickBoxes.Add(v, r);
                     DrawEntBox(v, boxColor);
                 }
             }
