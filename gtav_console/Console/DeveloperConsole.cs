@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.EnterpriseServices.Internal;
@@ -44,6 +45,8 @@ namespace DeveloperConsole {
         private int _lastBlinkTime;
         private int _lineOffset;
 
+        private List<Keys> keyWasDown = new List<Keys>();
+
         /// <summary>
         ///     Whether or not console debug is enabled
         /// </summary>
@@ -64,6 +67,7 @@ namespace DeveloperConsole {
 
             Tick += OnTick;
             KeyDown += OnKeyDown;
+            KeyUp += OnKeyUp;
 
             CommandDispatcher = new CommandDispatcher();
             ObjectSelector = new ObjectSelector();
@@ -121,6 +125,15 @@ namespace DeveloperConsole {
         #region Handle Console
 
         /// <summary>
+        ///     Handles key releases
+        /// </summary>
+        /// <param name="sender">The object sending the event</param>
+        /// <param name="e">The event arguments</param>
+        private void OnKeyUp(object sender, KeyEventArgs e) {
+            if (keyWasDown.Contains(e.KeyCode)) keyWasDown.Remove(e.KeyCode);
+        }
+
+        /// <summary>
         ///     Handles key presses
         /// </summary>
         /// <param name="sender">The object sending the event</param>
@@ -131,10 +144,13 @@ namespace DeveloperConsole {
             if (Array.IndexOf(ConsoleSettings.HideKeys, e.KeyCode) >= 0) {
                 ShowConsole(_isHidden);
                 e.SuppressKeyPress = true;
+                return;
             }
-            else if (e.KeyCode == Keys.Escape) {
+            
+            if (e.KeyCode == Keys.Escape) {
                 ShowConsole(false);
                 e.SuppressKeyPress = true;
+                return;
             }
 
             if (_isHidden) {
@@ -198,6 +214,7 @@ namespace DeveloperConsole {
                     var s = NativeMethods.GetCharsFromKeys(e.KeyData, (e.Modifiers & Keys.Shift) == Keys.Shift,
                         (e.Modifiers & Keys.Alt) == Keys.Alt);
                     if (s != null) {
+                        if (SetKeyDown(e.KeyCode)) return;
                         var c = s[0];
                         if ((NativeMethods.GetKeyState(VkCapital) & 0x8000) == 0x8000 ||
                             (NativeMethods.GetKeyState(VkCapital) & 1) == 1 && char.IsLetter(c))
@@ -209,6 +226,12 @@ namespace DeveloperConsole {
             }
 
             e.SuppressKeyPress = true;
+        }
+
+        private bool SetKeyDown(Keys k) {
+            bool ret = keyWasDown.Contains(k);
+            if (!keyWasDown.Contains(k)) keyWasDown.Add(k);
+            return ret;
         }
 
         /// <summary>
