@@ -14,7 +14,7 @@ namespace DeveloperConsole {
         public const Keys BackSpaceKey = Keys.Back;
 
         public static string Version =
-            FileVersionInfo.GetVersionInfo(typeof (DeveloperConsole).Assembly.Location).ProductVersion;
+            FileVersionInfo.GetVersionInfo(typeof (DeveloperConsole).Assembly.Location).ProductVersion != "9.9.9.9" ? FileVersionInfo.GetVersionInfo(typeof (DeveloperConsole).Assembly.Location).ProductVersion : "DEV";
 
         public static int NumLines = 15;
         public static float FontSize = .3F;

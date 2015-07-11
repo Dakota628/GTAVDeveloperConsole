@@ -45,12 +45,12 @@ namespace DeveloperConsole {
         private int _lastBlinkTime;
         private int _lineOffset;
 
-        private List<Keys> keyWasDown = new List<Keys>();
+        private List<Keys> _keyWasDown = new List<Keys>();
 
         /// <summary>
         ///     Whether or not console debug is enabled
         /// </summary>
-        public bool Debug = true;
+        public bool Debug = ConsoleSettings.Version.Equals("DEV");
 
         /// <summary>
         ///     The consoles input text
@@ -130,7 +130,7 @@ namespace DeveloperConsole {
         /// <param name="sender">The object sending the event</param>
         /// <param name="e">The event arguments</param>
         private void OnKeyUp(object sender, KeyEventArgs e) {
-            if (keyWasDown.Contains(e.KeyCode)) keyWasDown.Remove(e.KeyCode);
+            if (_keyWasDown.Contains(e.KeyCode)) _keyWasDown.Remove(e.KeyCode);
         }
 
         /// <summary>
@@ -229,8 +229,8 @@ namespace DeveloperConsole {
         }
 
         private bool SetKeyDown(Keys k) {
-            bool ret = keyWasDown.Contains(k);
-            if (!keyWasDown.Contains(k)) keyWasDown.Add(k);
+            bool ret = _keyWasDown.Contains(k);
+            if (!_keyWasDown.Contains(k)) _keyWasDown.Add(k);
             return ret;
         }
 
