@@ -80,10 +80,10 @@ namespace DeveloperConsole {
                     v += Vector3.Multiply(Game.Player.Character.RightVector,
                         25*GTAFuncs.GetControlNormal(Control.MoveRight));
                 }
-                if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.Attack)) {
+                if (GTAFuncs.IsControlPressed(Control.Attack)) {
                     v += Vector3.Multiply(Game.Player.Character.UpVector, 15);
                 }
-                if (GTAFuncs.IsControlPressedIgnoreDisabled(Control.Aim)) {
+                if (GTAFuncs.IsControlPressed(Control.Aim)) {
                     v += Vector3.Multiply(Game.Player.Character.UpVector, -15);
                 }
 
