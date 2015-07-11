@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Windows.Media.Media3D;
 using GTA;
 using GTA.Math;
@@ -238,7 +237,7 @@ namespace DeveloperConsole {
         /// <param name="c">The color of the overlay</param>
         /// <returns>The current rectangle instance</returns>
         public Rectangle3D DrawOverlay(Color c) {
-            Rectangle r = Project2D();
+            var r = Project2D();
             new UIRectangle(r.Location, r.Size, c).Draw();
             return this;
         }
@@ -250,8 +249,8 @@ namespace DeveloperConsole {
         /// <returns>The current rectangle instance</returns>
         public Rectangle3D DrawDebug(Color c) {
             foreach (var v in Corners) {
-                Vector2 w = GTAFuncs.WorldToScreen(v.Value);
-                new UIText(v.Key, new Point((int)w.X, (int)w.Y), .15f, c).Draw();
+                var w = GTAFuncs.WorldToScreen(v.Value);
+                new UIText(v.Key, new Point((int) w.X, (int) w.Y), .15f, c).Draw();
             }
             return this;
         }
@@ -262,17 +261,21 @@ namespace DeveloperConsole {
         /// <param name="c">The color of the overlay</param>
         /// <returns>The current rectangle instance</returns>
         public Rectangle Project2D() {
-            Vector2 bottomLeft = GTAFuncs.WorldToScreen(Corners["100"]);
-            Vector2 topRight = GTAFuncs.WorldToScreen(Corners["011"]);
-            if (bottomLeft.X == -UI.WIDTH && bottomLeft.Y == -UI.HEIGHT) bottomLeft = new Vector2(0, Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["010"]).Y));
-            if (topRight.X == -UI.WIDTH && topRight.Y == -UI.HEIGHT) topRight = new Vector2(UI.WIDTH, Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["101"]).Y));
-            if (bottomLeft.X == -UI.WIDTH || bottomLeft.Y == -UI.HEIGHT) bottomLeft = new Vector2(Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["101"]).X), UI.HEIGHT);
-            if (topRight.X == -UI.WIDTH || topRight.Y == -UI.HEIGHT) topRight = new Vector2(Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["010"]).X), 0);
+            var bottomLeft = GTAFuncs.WorldToScreen(Corners["100"]);
+            var topRight = GTAFuncs.WorldToScreen(Corners["011"]);
+            if (bottomLeft.X == -UI.WIDTH && bottomLeft.Y == -UI.HEIGHT)
+                bottomLeft = new Vector2(0, Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["010"]).Y));
+            if (topRight.X == -UI.WIDTH && topRight.Y == -UI.HEIGHT)
+                topRight = new Vector2(UI.WIDTH, Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["101"]).Y));
+            if (bottomLeft.X == -UI.WIDTH || bottomLeft.Y == -UI.HEIGHT)
+                bottomLeft = new Vector2(Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["101"]).X), UI.HEIGHT);
+            if (topRight.X == -UI.WIDTH || topRight.Y == -UI.HEIGHT)
+                topRight = new Vector2(Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["010"]).X), 0);
             if (topRight.X == -UI.WIDTH || topRight.Y == -UI.HEIGHT) return new Rectangle(-1, -1, -1, -1);
 
-            Vector2 size = topRight - bottomLeft;
+            var size = topRight - bottomLeft;
 
-            return new Rectangle(new Point((int)bottomLeft.X, (int)bottomLeft.Y), new Size((int)size.X, (int)size.Y));
+            return new Rectangle(new Point((int) bottomLeft.X, (int) bottomLeft.Y), new Size((int) size.X, (int) size.Y));
         }
 
         /// <summary>

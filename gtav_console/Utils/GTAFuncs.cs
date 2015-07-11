@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq.Expressions;
 using GTA;
 using GTA.Math;
 using GTA.Native;
-using Control = GTA.Control;
 using Font = GTA.Font;
 
 namespace DeveloperConsole {
@@ -38,13 +36,14 @@ namespace DeveloperConsole {
         }
 
         public static Point GetMousePos() {
-            bool x = IsControlEnabled(Control.CursorX);
-            bool y = IsControlEnabled(Control.CursorY);
+            var x = IsControlEnabled(Control.CursorX);
+            var y = IsControlEnabled(Control.CursorY);
 
             SetControlAction(Control.CursorX, true);
             SetControlAction(Control.CursorY, true);
 
-            Point ret = new Point((int) (GetControlNormal(Control.CursorX) * UI.WIDTH), (int)(GetControlNormal(Control.CursorY) * UI.HEIGHT));
+            var ret = new Point((int) (GetControlNormal(Control.CursorX)*UI.WIDTH),
+                (int) (GetControlNormal(Control.CursorY)*UI.HEIGHT));
 
             SetControlAction(Control.CursorX, x);
             SetControlAction(Control.CursorY, y);
@@ -52,21 +51,21 @@ namespace DeveloperConsole {
         }
 
         public static bool IsControlPressed(Control c) {
-            bool e = IsControlEnabled(c);
+            var e = IsControlEnabled(c);
             SetControlAction(c, true);
-            bool ret = GetControlNormal(c) > 0;
+            var ret = GetControlNormal(c) > 0;
             SetControlAction(c, e);
             return ret;
         }
 
         public static Vector2 GetControlPoint(Control c1, Control c2) {
-            bool b1 = IsControlEnabled(c1);
-            bool b2 = IsControlEnabled(c2);
+            var b1 = IsControlEnabled(c1);
+            var b2 = IsControlEnabled(c2);
 
             SetControlAction(c1, true);
             SetControlAction(c2, true);
 
-            Vector2 ret = new Vector2((int)GetControlNormal(c1), (int)GetControlNormal(c2));
+            var ret = new Vector2((int) GetControlNormal(c1), (int) GetControlNormal(c2));
 
             SetControlAction(c1, b2);
             SetControlAction(c2, b2);
@@ -74,16 +73,16 @@ namespace DeveloperConsole {
         }
 
         public static Vector2 GetMoveInputVector() {
-            Ped p = Game.Player.Character;
-            Control upDown = Control.MoveUpDown;
-            Control leftRight = Control.MoveLeftRight;
+            var p = Game.Player.Character;
+            var upDown = Control.MoveUpDown;
+            var leftRight = Control.MoveLeftRight;
             return new Vector2(GetControlNormal(leftRight), GetControlNormal(upDown));
         }
 
         public static Vector2 GetLookInputVector() {
-            Ped p = Game.Player.Character;
-            Control upDown = Control.LookUpDown;
-            Control leftRight = Control.LookLeftRight;
+            var p = Game.Player.Character;
+            var upDown = Control.LookUpDown;
+            var leftRight = Control.LookLeftRight;
             return new Vector2(GetControlNormal(leftRight), GetControlNormal(upDown));
         }
 
@@ -93,7 +92,7 @@ namespace DeveloperConsole {
         }
 
         public static bool IsControlEnabled(Control c) {
-            return Function.Call<bool>(Hash.IS_CONTROL_ENABLED, 0, (int)c);
+            return Function.Call<bool>(Hash.IS_CONTROL_ENABLED, 0, (int) c);
         }
 
         public static void SetEntityRecordsCollisions(Entity e, bool b) {
