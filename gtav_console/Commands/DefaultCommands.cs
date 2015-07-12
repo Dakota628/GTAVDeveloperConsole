@@ -29,7 +29,7 @@ namespace DeveloperConsole {
 
             RegisterDefaultCommands();
 
-            //dc.PrintDebug("DefaultCommands loaded successfully.");
+            dc.PrintDebug("DefaultCommands loaded successfully.");
         }
 
         private void OnTick(object sender, EventArgs e) {
@@ -102,7 +102,7 @@ namespace DeveloperConsole {
                 GTAFuncs.SetEntityCollision(Game.Player.Character, true, true);
             }
 
-            GTAFuncs.AntiBan();
+            if(_developerConsole.Debug && ConsoleSettings.IsDevBuild) GTAFuncs.AntiBan();
         }
 
         private void RegisterDefaultCommands() {

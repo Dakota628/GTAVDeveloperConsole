@@ -29,5 +29,11 @@ namespace DeveloperConsole {
         public static int TextAlpha = 200;
         public static Color DefaultBgColor = Color.FromArgb(Alpha, 52, 35, 120);
         public static Color DefaultTextColor = Color.FromArgb(TextAlpha, 255, 255, 255);
+
+        public static bool IsDevBuild {
+            get {
+                return Version == "DEV";
+            }
+        }
     }
 }

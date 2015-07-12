@@ -299,9 +299,16 @@ namespace DeveloperConsole {
                     case CommandTokenKind.Word:
                         bool res;
                         if (bool.TryParse(String, out res)) return res;
-                        break;
+                        if (String == "on" || String == "enable") return true;
+                        if (String == "off" || String == "disable") return false;
+                        return String;
                     case CommandTokenKind.CodeBlock:
-                        return CSharpEval(String);
+                        try {
+                            return CSharpEval(String);
+                        }
+                        catch (Exception e) {
+                            return null;
+                        }
                     case CommandTokenKind.Number:
                         return Convert.ToDouble(String);
                 }
