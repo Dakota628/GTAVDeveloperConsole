@@ -67,20 +67,18 @@ namespace DeveloperConsole {
 
             var ret = new Vector2((int) GetControlNormal(c1), (int) GetControlNormal(c2));
 
-            SetControlAction(c1, b2);
+            SetControlAction(c1, b1);
             SetControlAction(c2, b2);
             return ret;
         }
 
         public static Vector2 GetMoveInputVector() {
-            var p = Game.Player.Character;
             var upDown = Control.MoveUpDown;
             var leftRight = Control.MoveLeftRight;
             return new Vector2(GetControlNormal(leftRight), GetControlNormal(upDown));
         }
 
         public static Vector2 GetLookInputVector() {
-            var p = Game.Player.Character;
             var upDown = Control.LookUpDown;
             var leftRight = Control.LookLeftRight;
             return new Vector2(GetControlNormal(leftRight), GetControlNormal(upDown));

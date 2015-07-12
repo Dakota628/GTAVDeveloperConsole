@@ -91,6 +91,7 @@ namespace DeveloperConsole {
         ///     Choose the currently select entity
         /// </summary>
         /// <param name="click">Was this issued through click?</param>
+        /// <param name="alt">Whether or not to create a cs command to modify this object</param>
         private void SelectObject(bool click = false, bool alt = false) {
             if (click && _selectedEntity != null || !click) Enabled = false;
             if (_selectedEntity == null) return;
@@ -107,15 +108,14 @@ namespace DeveloperConsole {
                                                    _selectedEntity.Handle + ")} ";
             }
             else if (_selectedEntity is Ped) {
-                if(((Ped) _selectedEntity).IsPlayer) {
+                if (((Ped) _selectedEntity).IsPlayer) {
                     DeveloperConsole.Instance.Input += " {" + returnText + "new Player(" + _selectedEntity.Handle +
-                                      ")} ";
-                    
-                } else {
-                    DeveloperConsole.Instance.Input += " {" + returnText + "new Ped(" + _selectedEntity.Handle +
-                                   ")} ";
+                                                       ")} ";
                 }
-
+                else {
+                    DeveloperConsole.Instance.Input += " {" + returnText + "new Ped(" + _selectedEntity.Handle +
+                                                       ")} ";
+                }
             }
             else {
                 DeveloperConsole.Instance.Input += " {" + returnText + "new Entity(" +
@@ -222,7 +222,8 @@ namespace DeveloperConsole {
 
             for (var i = 0; i < lines.Count; i++) {
                 GTAFuncs.SetTextDropShadow(2, Color.FromArgb(255, 0, 0, 0));
-                new UIText(lines[i], new Point(0, (i*10)), textScale, Color.FromArgb(255, c), 0, true).Draw(new Size(contain.Location));
+                new UIText(lines[i], new Point(0, (i*10)), textScale, Color.FromArgb(255, c), 0, true).Draw(
+                    new Size(contain.Location));
                 GTAFuncs.SetTextDropShadow(0, Color.Transparent);
             }
 

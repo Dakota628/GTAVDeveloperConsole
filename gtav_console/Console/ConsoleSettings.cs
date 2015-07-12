@@ -14,7 +14,9 @@ namespace DeveloperConsole {
         public const Keys BackSpaceKey = Keys.Back;
 
         public static string Version =
-            FileVersionInfo.GetVersionInfo(typeof (DeveloperConsole).Assembly.Location).ProductVersion != "9.9.9.9" ? FileVersionInfo.GetVersionInfo(typeof (DeveloperConsole).Assembly.Location).ProductVersion : "DEV";
+            FileVersionInfo.GetVersionInfo(typeof (DeveloperConsole).Assembly.Location).ProductVersion != "9.9.9.9"
+                ? FileVersionInfo.GetVersionInfo(typeof (DeveloperConsole).Assembly.Location).ProductVersion
+                : "DEV";
 
         public static int NumLines = 15;
         public static float FontSize = .3F;
@@ -31,9 +33,7 @@ namespace DeveloperConsole {
         public static Color DefaultTextColor = Color.FromArgb(TextAlpha, 255, 255, 255);
 
         public static bool IsDevBuild {
-            get {
-                return Version == "DEV";
-            }
+            get { return Version == "DEV"; }
         }
     }
 }

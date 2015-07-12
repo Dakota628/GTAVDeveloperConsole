@@ -72,14 +72,14 @@ namespace DeveloperConsole {
             uint flags);
 
         [StructLayout(LayoutKind.Sequential)]
-        public class POINT {
+        public class Point {
             public int x;
             public int y;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public class MouseHookStruct {
-            public POINT pt;
+            public Point pt;
             public int hwnd;
             public int wHitTestCode;
             public int dwExtraInfo;

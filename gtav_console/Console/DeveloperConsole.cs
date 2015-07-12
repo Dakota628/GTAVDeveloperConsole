@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.EnterpriseServices.Internal;
@@ -37,6 +36,7 @@ namespace DeveloperConsole {
             new List<KeyValuePair<Script, OnConsoleAttached>>();
 
         private readonly List<string> _inputHistory = new List<string>();
+        private readonly List<Keys> _keyWasDown = new List<Keys>();
         private readonly List<KeyValuePair<string, Color>> _lines = new List<KeyValuePair<string, Color>>();
         private string _cursorChar = "";
         private int _historyCursor = -1;
@@ -44,8 +44,6 @@ namespace DeveloperConsole {
         private bool _isHidden;
         private int _lastBlinkTime;
         private int _lineOffset;
-
-        private List<Keys> _keyWasDown = new List<Keys>();
 
         /// <summary>
         ///     Whether or not console debug is enabled
@@ -146,7 +144,7 @@ namespace DeveloperConsole {
                 e.SuppressKeyPress = true;
                 return;
             }
-            
+
             if (e.KeyCode == Keys.Escape) {
                 ShowConsole(false);
                 e.SuppressKeyPress = true;
@@ -229,7 +227,7 @@ namespace DeveloperConsole {
         }
 
         private bool SetKeyDown(Keys k) {
-            bool ret = _keyWasDown.Contains(k);
+            var ret = _keyWasDown.Contains(k);
             if (!_keyWasDown.Contains(k)) _keyWasDown.Add(k);
             return ret;
         }

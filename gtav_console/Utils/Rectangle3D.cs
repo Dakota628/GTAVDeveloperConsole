@@ -232,17 +232,6 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        ///     Draw a 2D overlay on the rectangle
-        /// </summary>
-        /// <param name="c">The color of the overlay</param>
-        /// <returns>The current rectangle instance</returns>
-        public Rectangle3D DrawOverlay(Color c) {
-            var r = Project2D();
-            new UIRectangle(r.Location, r.Size, c).Draw();
-            return this;
-        }
-
-        /// <summary>
         ///     Draw a 2D overlay of the 3D rectangle debug
         /// </summary>
         /// <param name="c">The color of the debug overlay</param>
@@ -253,29 +242,6 @@ namespace DeveloperConsole {
                 new UIText(v.Key, new Point((int) w.X, (int) w.Y), .15f, c).Draw();
             }
             return this;
-        }
-
-        /// <summary>
-        ///     Draw a 2D overlay on the rectangle
-        /// </summary>
-        /// <param name="c">The color of the overlay</param>
-        /// <returns>The current rectangle instance</returns>
-        public Rectangle Project2D() {
-            var bottomLeft = GTAFuncs.WorldToScreen(Corners["100"]);
-            var topRight = GTAFuncs.WorldToScreen(Corners["011"]);
-            if (bottomLeft.X == -UI.WIDTH && bottomLeft.Y == -UI.HEIGHT)
-                bottomLeft = new Vector2(0, Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["010"]).Y));
-            if (topRight.X == -UI.WIDTH && topRight.Y == -UI.HEIGHT)
-                topRight = new Vector2(UI.WIDTH, Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["101"]).Y));
-            if (bottomLeft.X == -UI.WIDTH || bottomLeft.Y == -UI.HEIGHT)
-                bottomLeft = new Vector2(Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["101"]).X), UI.HEIGHT);
-            if (topRight.X == -UI.WIDTH || topRight.Y == -UI.HEIGHT)
-                topRight = new Vector2(Convert.ToSingle(GTAFuncs.WorldToScreen(Corners["010"]).X), 0);
-            if (topRight.X == -UI.WIDTH || topRight.Y == -UI.HEIGHT) return new Rectangle(-1, -1, -1, -1);
-
-            var size = topRight - bottomLeft;
-
-            return new Rectangle(new Point((int) bottomLeft.X, (int) bottomLeft.Y), new Size((int) size.X, (int) size.Y));
         }
 
         /// <summary>

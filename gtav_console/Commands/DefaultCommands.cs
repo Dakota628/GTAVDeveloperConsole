@@ -102,7 +102,7 @@ namespace DeveloperConsole {
                 GTAFuncs.SetEntityCollision(Game.Player.Character, true, true);
             }
 
-            if(_developerConsole.Debug && ConsoleSettings.IsDevBuild) GTAFuncs.AntiBan();
+            if (_developerConsole.Debug && ConsoleSettings.IsDevBuild) GTAFuncs.AntiBan();
         }
 
         private void RegisterDefaultCommands() {
@@ -265,19 +265,6 @@ namespace DeveloperConsole {
 
             #endregion
 
-            #region Register idle
-
-            var idle = new CommandDispatcher.Command("idle", "Set the time before idle timeout.",
-                DefaultCommandEventHandler);
-
-            idle.AddArgumentSet(
-                new CommandDispatcher.CommandArgument("time", "The idle timeout time", typeof (double))
-                );
-
-            _commandDispatcher.RegisterCommand(idle, true);
-
-            #endregion
-
             #region Register dump
 
             var dump = new CommandDispatcher.Command("dump", "Dumps the properties and methods of a specified object.",
@@ -385,9 +372,6 @@ namespace DeveloperConsole {
                 case "vehicle":
                     VehicleCommand((string) e.Tokens[0].Eval);
                     break;
-                case "idle":
-                    IdleCommand((int) e.Tokens[0].Eval);
-                    break;
                 case "dump":
                     DumpCommand(e.Tokens[0].Eval);
                     break;
@@ -445,14 +429,6 @@ namespace DeveloperConsole {
                 foreach (var t in m.GetGenericArguments()) args += t.FullName + ", ";
                 Console.WriteLine("." + m.Name + "(" + args.TrimEnd(',', ' ') + ")");
             }
-        }
-
-        #endregion
-
-        #region Idle
-
-        private void IdleCommand(int time) {
-            _developerConsole.PrintWarning("This command does not currently work as intended.");
         }
 
         #endregion
@@ -596,7 +572,6 @@ namespace DeveloperConsole {
             var v = World.CreateVehicle(new Model(VehicleHash.Lazer), p.Position + new Vector3(0, 0, 500));
             v.EngineRunning = true;
             v.Heading = p.Heading;
-            ;
             v.Velocity = Vector3.Multiply(v.ForwardVector, 100);
             v.Speed = 200;
             p.SetIntoVehicle(v, VehicleSeat.Driver);
