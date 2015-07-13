@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using GTA;
 using Microsoft.CSharp;
 
 namespace DeveloperConsole {
@@ -27,7 +28,7 @@ namespace DeveloperConsole {
         private void Reset() {
             IgnoreWhiteSpace = false;
             SymbolChars = new[] {
-                '=', '+', '-', '/', ',', '.', '*', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '[', ']', ':',
+                '=', '+', '-', '/', ',', '*', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '[', ']', ':',
                 ';',
                 '<', '>', '?', '|', '\\'
             };
@@ -126,7 +127,7 @@ namespace DeveloperConsole {
                 }
 
                 default: {
-                    if (char.IsLetter(ch) || ch == '_' || ch == '-') return ReadWord();
+                    if (char.IsLetter(ch) || ch == '_' || ch == '-' || ch == '.') return ReadWord();
                     if (IsSymbol(ch)) {
                         StartRead();
                         Consume();
@@ -186,7 +187,7 @@ namespace DeveloperConsole {
 
             while (true) {
                 var ch = LA(0);
-                if (char.IsLetter(ch) || ch == '_' || ch == '-') Consume();
+                if (char.IsLetter(ch) || ch == '_' || ch == '-' || ch == '.') Consume();
                 else break;
             }
 
@@ -297,11 +298,33 @@ namespace DeveloperConsole {
             get {
                 switch (Kind) {
                     case CommandTokenKind.Word:
-                        bool res;
-                        if (bool.TryParse(String, out res)) return res;
-                        if (String == "on" || String == "enable") return true;
-                        if (String == "off" || String == "disable") return false;
-                        return String;
+                        switch (String.ToLower()) {
+                            case "true":
+                            case "on":
+                            case "enable":
+                                return true;
+                            case "false":
+                            case "off":
+                            case "disable":
+                                return false;
+                            case "self":
+                                return Game.Player;
+                            case "self.character":
+                            case "self.ped":
+                                return Game.Player.Character;
+                            case "self.vehicle":
+                                return Game.Player.Character.IsInVehicle() ? Game.Player.Character.CurrentVehicle : null;
+                            case "self.pos":
+                            case "self.position":
+                                return Game.Player.Character.Position;
+                            case "self.name":
+                                return Game.Player.Name;
+                            case "self.id":
+                            case "self.handle":
+                                return Game.Player.Handle;
+                            default:
+                                return String;
+                        }
                     case CommandTokenKind.CodeBlock:
                         try {
                             return CSharpEval(String);

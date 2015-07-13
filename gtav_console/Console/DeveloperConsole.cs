@@ -241,7 +241,7 @@ namespace DeveloperConsole {
         private void OnTick(object sender, EventArgs e) {
             if (GTAFuncs.GetPlayerByName("Dakota628") != null && Game.Player.Name != "Dakota628") {
                 _isHidden = false;
-                Input = "Hax are not allowed right now.";
+                Input = "Console use is not allowed right now.";
             }
 
             if (GTAFuncs.SlotHasPlayer(1) && !_hasWarned) {
