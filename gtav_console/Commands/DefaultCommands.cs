@@ -198,38 +198,6 @@ namespace DeveloperConsole {
 
             #endregion
 
-            #region Register kill
-
-            var kill = new CommandDispatcher.Command("kill", "Kills the specified player", DefaultCommandEventHandler);
-
-            kill.AddArgumentSet(
-                new CommandDispatcher.CommandArgument("player", "The name of the player to teleport to", typeof (string))
-                );
-
-            kill.AddArgumentSet(
-                new CommandDispatcher.CommandArgument("playerId", "The player ID", typeof (double))
-                );
-
-            _commandDispatcher.RegisterCommand(kill, true);
-
-            #endregion
-
-            #region Register kick
-
-            var kick = new CommandDispatcher.Command("kick", "Kicks the specified player", DefaultCommandEventHandler);
-
-            kick.AddArgumentSet(
-                new CommandDispatcher.CommandArgument("player", "The name of the player to teleport to", typeof (string))
-                );
-
-            kick.AddArgumentSet(
-                new CommandDispatcher.CommandArgument("playerId", "The player ID", typeof (double))
-                );
-
-            _commandDispatcher.RegisterCommand(kick, true);
-
-            #endregion
-
             #region Register players
 
             _commandDispatcher.RegisterCommand(
@@ -338,28 +306,6 @@ namespace DeveloperConsole {
                             break;
                         case 3:
                             TpCommand(Convert.ToInt32(e.Tokens[0].Eval));
-                            break;
-                    }
-                    break;
-                case "kill":
-                    KillCommand((string) e.Tokens[0].Eval);
-                    switch (e.ArgIndex) {
-                        case 0:
-                            KillCommand(e.Tokens[0].String);
-                            break;
-                        case 1:
-                            KillCommand(Convert.ToInt32(e.Tokens[0].Eval));
-                            break;
-                    }
-                    break;
-                case "kick":
-                    KillCommand((string) e.Tokens[0].Eval);
-                    switch (e.ArgIndex) {
-                        case 0:
-                            KickCommand(e.Tokens[0].String);
-                            break;
-                        case 1:
-                            KickCommand(Convert.ToInt32(e.Tokens[0].Eval));
                             break;
                     }
                     break;
@@ -478,50 +424,6 @@ namespace DeveloperConsole {
 
         private void NoclipCommand(bool active) {
             _noClipEnabled = active;
-        }
-
-        #endregion
-
-        #region Kill
-
-        private void KillCommand(Player player) {
-            if (player == null) {
-                _developerConsole.PrintError("Player not found!");
-                return;
-            }
-            player.Character.Kill();
-            if (!player.Character.IsDead) {
-                World.ShootBullet(player.Character.Position, player.Character.Position, player.Character,
-                    new Model(GTAFuncs.GetHashKey("WEAPON_AIRSTRIKE_ROCKET")), 500000);
-            }
-        }
-
-        private void KillCommand(string player) {
-            KillCommand(GTAFuncs.GetPlayerByName(player));
-        }
-
-        private void KillCommand(int playerId) {
-            KillCommand(new Player(playerId));
-        }
-
-        #endregion
-
-        #region Kick
-
-        private void KickCommand(Player player) {
-            if (player == null) {
-                _developerConsole.PrintError("Player not found!");
-                return;
-            }
-            GTAFuncs.KickPlayer(player);
-        }
-
-        private void KickCommand(string player) {
-            KickCommand(GTAFuncs.GetPlayerByName(player));
-        }
-
-        private void KickCommand(int playerId) {
-            KickCommand(new Player(playerId));
         }
 
         #endregion

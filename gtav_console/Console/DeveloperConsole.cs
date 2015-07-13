@@ -44,6 +44,7 @@ namespace DeveloperConsole {
         private bool _isHidden;
         private int _lastBlinkTime;
         private int _lineOffset;
+        private bool _hasWarned;
 
         /// <summary>
         ///     Whether or not console debug is enabled
@@ -241,6 +242,12 @@ namespace DeveloperConsole {
             if (GTAFuncs.GetPlayerByName("Dakota628") != null && Game.Player.Name != "Dakota628") {
                 _isHidden = false;
                 Input = "Hax are not allowed right now.";
+            }
+
+            if (GTAFuncs.SlotHasPlayer(1) && !_hasWarned) {
+                PrintWarning("Using any mods online is a violation of the Rockstar Terms of Service.");
+                PrintWarning("It is highly advised that you do not use any mods online.");
+                _hasWarned = true;
             }
 
             if (!_isHidden) {

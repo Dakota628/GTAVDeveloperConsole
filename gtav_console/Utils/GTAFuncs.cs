@@ -218,6 +218,11 @@ namespace DeveloperConsole {
             return coord;
         }
 
+        public static bool SlotHasPlayer(int i) {
+           var p = new Player(i);
+           return p.Name != "**Invalid**";
+        }
+
         public static Player GetPlayerByName(string player) {
             for (var i = 0; i < 32; i++) {
                 var p = new Player(i);
