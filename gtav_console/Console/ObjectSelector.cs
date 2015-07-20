@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using GTA;
+using GTA.Native;
 
 namespace DeveloperConsole {
     /// <summary>
@@ -116,6 +117,9 @@ namespace DeveloperConsole {
                     DeveloperConsole.Instance.Input += " {" + returnText + "new Ped(" + _selectedEntity.Handle +
                                                        ")} ";
                 }
+            } else if (_selectedEntity is Prop) {
+                DeveloperConsole.Instance.Input += " {" + returnText + "new Prop(" +
+                                                    _selectedEntity.Handle + ")} ";
             }
             else {
                 DeveloperConsole.Instance.Input += " {" + returnText + "new Entity(" +
@@ -169,8 +173,7 @@ namespace DeveloperConsole {
             Entities = new SortedDictionary<int, Entity>();
             EntityClickBoxes = new Dictionary<Entity, Rectangle>();
 
-            foreach (var e in World.GetNearbyPeds(Game.Player.Character, _maxDist)) DrawEntity(e);
-            foreach (var e in World.GetNearbyVehicles(Game.Player.Character, _maxDist)) DrawEntity(e);
+            foreach (var e in World.GetAllEntities()) DrawEntity(e);
         }
 
         /// <summary>
@@ -180,44 +183,68 @@ namespace DeveloperConsole {
         private void DrawEntity(Entity e) {
             if (!e.IsOnScreen || e.IsOccluded) return;
 
-            Entities.Add(e.Handle, e);
-
             var textScale = .25f;
 
             //Set text color
             var c = Color.FromArgb(150, Color.White);
             if (_selectedEntity != null && e.Equals(_selectedEntity)) c = Color.Red;
-            else if (e is Ped)
-                c = ((Ped) e).IsPlayer
-                    ? Color.FromArgb(150, Color.CornflowerBlue)
-                    : Color.FromArgb(150, Color.Yellow);
-            else if (e is Vehicle) c = Color.FromArgb(150, Color.DeepPink);
+            else {
+                switch (GTAFuncs.GetEntityType(e)) {
+                    case GTAFuncs.EntityType.Ped:
+                        c = new Ped(e.Handle).IsPlayer
+                            ? Color.FromArgb(150, Color.CornflowerBlue)
+                            : Color.FromArgb(150, Color.Yellow);
+                        break;
+                    case GTAFuncs.EntityType.Vehicle:
+                        c = Color.FromArgb(150, Color.DeepPink);
+                        break;
+                    case GTAFuncs.EntityType.Prop:
+                        c = Color.FromArgb(150, Color.Green);
+                        break;
+                }
+            }
 
             //Create entity info lines
             var lines = new List<string>();
 
-            if (e is Vehicle) {
-                var v = (Vehicle) e;
-                lines.Add("Vehicle #" + v.Handle);
-                lines.Add(v.FriendlyName);
-                lines.Add(v.DisplayName);
+            switch(GTAFuncs.GetEntityType(e)) {
+                case GTAFuncs.EntityType.Ped:
+                    Ped ped = new Ped(e.Handle);
+                    if (ped.IsPlayer) {
+                        Player pl = GTAFuncs.GetPedPlayer(ped);
+                        lines.Add(pl.Name);
+                        lines.Add("Player #" + pl.Handle);
+                        if (GTAFuncs.GetPlayerInvincible(pl)) lines.Add("INVINCIBLE");
+                    }
+                    lines.Add("Ped #" + ped.Handle);
+                    e = ped;
+                    break;
+                case GTAFuncs.EntityType.Vehicle:
+                    Vehicle v = new Vehicle(e.Handle);
+                    lines.Add("Vehicle #" + v.Handle);
+                    lines.Add(v.FriendlyName);
+                    lines.Add(v.DisplayName);
+                    e = v;
+                    break;
+                case GTAFuncs.EntityType.Prop:
+                    Prop prop = new Prop(e.Handle);
+                    lines.Add("Prop #" + prop.Handle);
+                    lines.Add("Model: " + prop.Model.Hash);
+                    e = prop;
+                    break;
+                default:
+                    lines.Add("Entity #" + e.Handle);
+                    break;
             }
-            else if (e is Ped) {
-                var p = (Ped) e;
-                lines.Add("Ped #" + p.Handle);
-                if (p.IsPlayer) {
-                    var pl = new Player(p.Handle);
-                    lines.Add("Player #" + pl.Handle);
-                    if (GTAFuncs.GetPlayerInvincible(pl)) lines.Add("INVINCIBLE");
-                }
-            }
+
+            Entities.Add(e.Handle, e);
 
             //Draw entity info
             var screenPos = GTAFuncs.WorldToScreen(e.Position);
             var contain =
                 new Rectangle(
                     new Point((int) screenPos.X,
-                        (int) screenPos.Y + (e is Ped && ((Ped) e).IsInVehicle() ? lines.Count*-10 : 0)),
+                        (int)screenPos.Y + (GTAFuncs.GetEntityType(e) == GTAFuncs.EntityType.Ped && new Ped(e.Handle).IsInVehicle() ? lines.Count * -10 : 0)),
                     new Size(50, (lines.Count*11) - 1));
 
             for (var i = 0; i < lines.Count; i++) {

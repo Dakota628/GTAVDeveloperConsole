@@ -60,7 +60,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="ScriptHookVDotNet, Version=0.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Documents\Visual Studio 2013\Projects\gtav_console\gtav_console\ScriptHookVDotNet.dll</HintPath>
+      <HintPath>..\..\scripthookvdotnet2\bin\Debug\ScriptHookVDotNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />

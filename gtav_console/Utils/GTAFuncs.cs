@@ -7,6 +7,20 @@ using Font = GTA.Font;
 
 namespace DeveloperConsole {
     public static class GTAFuncs {
+        public enum EntityType {
+            Ped = 1,
+            Vehicle = 2,
+            Prop = 3
+        }
+
+        public static EntityType GetEntityType(Entity e) {
+            return (EntityType) Function.Call<int>(Hash.GET_ENTITY_TYPE, e);
+        }
+
+        public static int GetPlayerIndex(Ped p) {
+            return Function.Call<int>(Hash.NETWORK_GET_PLAYER_INDEX, p.Handle);
+        }
+
         public static Vector2 ValidateScreenPoint(Vector2 v) {
             if (v.X > UI.WIDTH) v.X = UI.WIDTH;
             else if (v.X < 0) v.X = 0;
@@ -221,6 +235,15 @@ namespace DeveloperConsole {
         public static bool SlotHasPlayer(int i) {
            var p = new Player(i);
            return p.Name != "**Invalid**";
+        }
+
+        public static Player GetPedPlayer(Ped ped) {
+            for (var i = 0; i < 32; i++) {
+                var p = new Player(i);
+                if (SlotHasPlayer(i) && p.Character.Handle == ped.Handle) return p;
+            }
+
+            return null;
         }
 
         public static Player GetPlayerByName(string player) {
