@@ -38,6 +38,7 @@ namespace DeveloperConsole {
         private readonly List<string> _inputHistory = new List<string>();
         private readonly List<Keys> _keyWasDown = new List<Keys>();
         private readonly List<KeyValuePair<string, Color>> _lines = new List<KeyValuePair<string, Color>>();
+        private List<Control> _disabledControls = new List<Control>();
         private string _cursorChar = "";
         private int _historyCursor = -1;
         private int _inputOffset;
@@ -251,7 +252,7 @@ namespace DeveloperConsole {
             }
 
             if (!_isHidden) {
-                GTAFuncs.SetControlActions(false);
+                _disabledControls = GTAFuncs.DisableAllControls();
                 GTAFuncs.EnableControlAction(Control.MoveLeftRight, true);
                 GTAFuncs.EnableControlAction(Control.MoveUpDown, true);
                 GTAFuncs.EnableControlAction(Control.VehicleAccelerate, true);
@@ -271,7 +272,10 @@ namespace DeveloperConsole {
                 GTAFuncs.EnableControlAction(Control.VehicleFlyThrottleDown, true);
                 GTAFuncs.EnableControlAction(Control.VehicleFlyThrottleUp, true);
             }
-            else GTAFuncs.SetControlActions(true);
+            else {
+                GTAFuncs.SetControlActions(false);
+                GTAFuncs.EnableControls(_disabledControls);
+            }
 
             ObjectSelector.Tick();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using GTA;
 using GTA.Math;
@@ -332,6 +333,21 @@ namespace DeveloperConsole {
             Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, s);
             return Function.Call<float>(Hash._0x85F061DA64ED2F67, 1); //_GET_TEXT_SCREEN_WIDTH
         }
+
+
+        public static void EnableControls(List<Control> ctrls) {
+            foreach (var c in ctrls) EnableControlAction(c, true);
+        }
+
+        public static List<Control> DisableAllControls() {
+            var enabled = new List<Control>();
+            foreach (Control c in Enum.GetValues(typeof (Control))) {
+                if (IsControlEnabled(c)) enabled.Add(c);
+                DisableControlAction(c, true);
+            }
+            return enabled;
+        }
+
 
         public static void DisableControlAction(Control c, bool b) {
             Function.Call(Hash.DISABLE_CONTROL_ACTION, 0, (int) c, b);
