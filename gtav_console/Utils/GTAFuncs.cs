@@ -178,13 +178,6 @@ namespace DeveloperConsole {
             return new Vector2(x*UI.WIDTH, y*UI.HEIGHT);
         }
 
-        public static unsafe Point TestGetInput() {
-            var x = 0;
-            var y = 0;
-            Function.Call(Hash._0x36C1451A88A09630, &x, &y);
-            return new Point(x, y);
-        }
-
         public static void DisplayRadar(bool b) {
             Function.Call(Hash.DISPLAY_RADAR, b);
         }
