@@ -64,7 +64,7 @@ namespace DeveloperConsole {
                     if (IsStartOfCodeBlock(s)) { //Found begining of code block
                         TrimCodeBlockStart(ref s);
 
-                        if (IsEndOfCodeBlock(s)) { //This is also the end of ths string
+                        if (IsEndOfCodeBlock(s)) { //This is also the end of the code block
                             TrimCodeBlockEnd(ref s);
                             AddToken(CommandTokenKind.CodeBlock, s);
                         } else {
@@ -74,7 +74,7 @@ namespace DeveloperConsole {
                     } else if (IsStartOfString(s)) { //Found begining of string
                         TrimStringStart(ref s);
 
-                        if (IsEndOfString(s)) { //This is also the end of ths string
+                        if (IsEndOfString(s)) { //This is also the end of the string
                             TrimStringEnd(ref s);
                             AddToken(CommandTokenKind.String, s);
                         } else {
