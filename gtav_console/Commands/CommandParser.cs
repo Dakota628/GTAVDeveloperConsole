@@ -6,7 +6,7 @@ using Microsoft.CSharp;
 namespace DeveloperConsole {
     internal class CommandParser {
         private const char EOF = (char) 0;
-        private readonly DeveloperConsole _console;
+        private readonly IDeveloperConsole _console;
         private readonly string _data;
         private int _column;
         private int _line;
@@ -15,7 +15,7 @@ namespace DeveloperConsole {
         private int _saveLine;
         private int _savePos;
 
-        public CommandParser(string data, DeveloperConsole console) {
+        public CommandParser(string data, IDeveloperConsole console) {
             if (data == null) throw new ArgumentNullException("data");
             _data = data;
             _console = console;
@@ -278,10 +278,10 @@ namespace DeveloperConsole {
     }
 
     public class CommandToken {
-        private readonly DeveloperConsole _console;
+        private readonly IDeveloperConsole _console;
 
         public CommandToken(CommandTokenKind kind, string @string, int line, int column,
-            DeveloperConsole console) {
+            IDeveloperConsole console) {
             Kind = kind;
             String = @string;
             Line = line;
