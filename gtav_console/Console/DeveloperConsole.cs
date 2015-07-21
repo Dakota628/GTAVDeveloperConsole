@@ -27,7 +27,7 @@ namespace DeveloperConsole {
     /// <summary>
     ///     The console model
     /// </summary>
-    public class DeveloperConsole : Script {
+    public class DeveloperConsole : Script, IDeveloperConsole {
         public delegate void OnConsoleAttached(DeveloperConsole developerConsole);
 
         private const int VkCapital = 0x14;

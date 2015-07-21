@@ -75,6 +75,7 @@
     <Compile Include="Console\ConsoleSettings.cs" />
     <Compile Include="Commands\DefaultCommands.cs" />
     <Compile Include="Console\DeveloperConsole.cs" />
+    <Compile Include="Console\IDeveloperConsole.cs" />
     <Compile Include="Utils\GTAFuncs.cs" />
     <Compile Include="Console\ObjectSelector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
