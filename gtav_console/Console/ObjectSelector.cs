@@ -10,7 +10,6 @@ namespace DeveloperConsole {
     ///     The object selector
     /// </summary>
     public class ObjectSelector {
-        private readonly float _maxDist = 10000;
         private int _lastHandle;
         private Entity _selectedEntity;
 

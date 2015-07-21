@@ -521,7 +521,7 @@ namespace DeveloperConsole {
             var cmdName = "";
             var tokens = new List<CommandToken>();
 
-            for (CommandToken t; (t = ct.Next()).Kind != CommandTokenKind.EOF;) {
+            foreach (CommandToken t in ct.Tokens) {
                 switch (t.Kind) {
                     case CommandTokenKind.Word:
                         if (cmdName == "") {
@@ -531,7 +531,7 @@ namespace DeveloperConsole {
                         else tokens.Add(t);
                         break;
                     case CommandTokenKind.Number:
-                    case CommandTokenKind.QuotedString:
+                    case CommandTokenKind.String:
                     case CommandTokenKind.CodeBlock:
                         tokens.Add(t);
                         break;

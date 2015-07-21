@@ -3,307 +3,180 @@ using System.CodeDom.Compiler;
 using GTA;
 using Microsoft.CSharp;
 using System.Linq;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DeveloperConsole {
     internal class CommandParser {
-        private const char EOF = (char) 0;
-        private readonly IDeveloperConsole _console;
-        private readonly string _data;
-        private int _column;
-        private int _line;
-        private int _pos;
-        private int _saveCol;
-        private int _saveLine;
-        private int _savePos;
+        private const string CODEBLOCK_OPEN = "{";
+        private const string CODEBLOCK_CLOSE = "}";
+        private const string STRING_OPEN = "\"";
+        private const string STRING_CLOSE = STRING_OPEN;
 
-        public CommandParser(string data, IDeveloperConsole console) {
-            if (data == null) throw new ArgumentNullException("data");
+        private String _data;
+        private readonly IDeveloperConsole _console;
+        private List<CommandToken> _tokens = new List<CommandToken>();
+        public List<CommandToken> Tokens {
+            get {
+                return _tokens;
+            }
+        }
+
+        private String _segments = "";
+        private bool _isString = false;
+        private bool _isCodeBlock = false;
+
+        public CommandParser(String data, IDeveloperConsole console) {
             _data = data;
             _console = console;
-            Reset();
+            Parse();
         }
 
-        public char[] SymbolChars { get; set; }
-		public char[] Didgets { get; set; }
-        public bool IgnoreWhiteSpace { get; set; }
+        private void Parse()
+        {
+            _segments = "";
+            _isString = false;
+            _isCodeBlock = false;
 
-        private void Reset() {
-            IgnoreWhiteSpace = false;
-            SymbolChars = new[] {
-                '=', '+', '-', '/', ',', '*', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '[', ']', ':',
-                ';',
-                '<', '>', '?', '|', '\\'
-            };
+            foreach (String __s in Regex.Split(_data, @"[\s\r\n]+").Where(s => s != string.Empty)) {
+                String s = __s;
 
-			Didgets = new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-
-            _line = 1;
-            _column = 1;
-            _pos = 0;
-        }
-
-        protected char LA(int count) {
-            if (_pos + count >= _data.Length) return EOF;
-            return _data[_pos + count];
-        }
-
-        protected char Consume() {
-            var ret = _data[_pos];
-            _pos++;
-            _column++;
-
-            return ret;
-        }
-
-        protected CommandToken CreateToken(CommandTokenKind kind, string value) {
-            return new CommandToken(kind, value, _line, _column, _console);
-        }
-
-        protected CommandToken CreateToken(CommandTokenKind kind) {
-            var tokenData = _data.Substring(_savePos, _pos - _savePos);
-
-            if (kind == CommandTokenKind.QuotedString) {
-                if (tokenData[0] == '"') tokenData = tokenData.Remove(0, 1);
-                if (tokenData[tokenData.Length - 1] == '"') tokenData = tokenData.Remove(tokenData.Length - 1, 1);
-            }
-
-            if (kind == CommandTokenKind.CodeBlock) {
-                if (tokenData[0] == '{') tokenData = tokenData.Remove(0, 1);
-                if (tokenData[tokenData.Length - 1] == '}') tokenData = tokenData.Remove(tokenData.Length - 1, 1);
-            }
-
-            return new CommandToken(kind, tokenData, _saveLine, _saveCol, _console);
-        }
-
-        public CommandToken Next() {
-            ReadToken:
-
-            var ch = LA(0);
-            switch (ch) {
-                case EOF:
-                    return CreateToken(CommandTokenKind.EOF, string.Empty);
-
-                case ' ':
-                case '\t': {
-                    if (IgnoreWhiteSpace) {
-                        Consume();
-                        goto ReadToken;
+                if (_isString) { //Begining of string was found, end not yet found
+                    if (IsEndOfString(s)) { //Found end of string
+                        TrimStringEnd(ref s);
+                        AddSegment(s);
+                        AddToken(CommandTokenKind.String);
+                    } else { // Found string contents
+                        ReplaceStringLiterals(ref s);
+                        AddSegment(s);
                     }
-                    return ReadWhitespace();
-                }
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    return ReadNumber();
-
-                case '\r': {
-                    StartRead();
-                    Consume();
-                    if (LA(0) == '\n') Consume();
-
-                    _line++;
-                    _column = 1;
-
-                    return CreateToken(CommandTokenKind.EOL);
-                }
-                case '\n': {
-                    StartRead();
-                    Consume();
-                    _line++;
-                    _column = 1;
-
-                    return CreateToken(CommandTokenKind.EOL);
-                }
-
-                case '"': {
-                    return ReadString();
-                }
-
-                case '{': {
-                    return ReadCodeBlock();
-                }
-
-                default: {
-					if(ch == '-') {
-						char following = LA(1);
-						bool isFollowingDidget = Didgets.Any(x => x == following);
-						if(isFollowingDidget) {
-							return ReadNumber();
-						}
-					}
-
-                    if (char.IsLetter(ch) || ch == '_' || ch == '-' || ch == '.') return ReadWord();
-                    if (IsSymbol(ch)) {
-                        StartRead();
-                        Consume();
-                        return CreateToken(CommandTokenKind.Symbol);
+                } else if (_isCodeBlock) { //Begining of codeblock was found, end not yet found
+                    if (IsEndOfCodeBlock(s)) { //Found end of code block
+                        TrimCodeBlockEnd(ref s);
+                        AddSegment(s);
+                        AddToken(CommandTokenKind.CodeBlock);
+                    } else { // Found codeblock contents
+                        ReplaceCodeBlockLiterals(ref s);
+                        AddSegment(s);
                     }
-                    StartRead();
-                    Consume();
-                    return CreateToken(CommandTokenKind.Unknown);
+                } else {
+
+                    if (IsStartOfCodeBlock(s)) { //Found begining of code block
+                        TrimCodeBlockStart(ref s);
+
+                        if (IsEndOfCodeBlock(s)) { //This is also the end of ths string
+                            TrimCodeBlockEnd(ref s);
+                            AddToken(CommandTokenKind.CodeBlock, s);
+                        } else {
+                            _isCodeBlock = true;
+                            AddSegment(s);
+                        }
+                    } else if (IsStartOfString(s)) { //Found begining of string
+                        TrimStringStart(ref s);
+
+                        if (IsEndOfString(s)) { //This is also the end of ths string
+                            TrimStringEnd(ref s);
+                            AddToken(CommandTokenKind.String, s);
+                        } else {
+                            _isString = true;
+                            AddSegment(s);
+                        }
+                    } else if (IsNumeric(s)) { //Found number
+                        AddToken(CommandTokenKind.Number, s);
+                        continue;
+                    } else { //Found word
+                        AddToken(CommandTokenKind.Word, s);
+                    }
                 }
+            }
+
+            if (_segments != "") {
+                if (_isString) AddToken(CommandTokenKind.String);
+                else if (_isCodeBlock) AddToken(CommandTokenKind.CodeBlock);
             }
         }
 
-        private void StartRead() {
-            _saveLine = _line;
-            _saveCol = _column;
-            _savePos = _pos;
+
+        private void AddSegment(String s) {
+            if (_segments != "") _segments += " ";
+            _segments += s;
         }
 
-        protected CommandToken ReadWhitespace() {
-            StartRead();
-
-            Consume();
-
-            while (true) {
-                var ch = LA(0);
-                if (ch == '\t' || ch == ' ') Consume();
-                else break;
-            }
-
-            return CreateToken(CommandTokenKind.WhiteSpace);
+        private void AddToken(CommandTokenKind k, String data) {
+            _tokens.Add(new CommandToken(k, data, _console));
+            _segments = "";
+            _isString = false;
+            _isCodeBlock = false;
         }
 
-        protected CommandToken ReadNumber() {
-            StartRead();
-
-            var hadDot = false;
-
-            Consume();
-
-            while (true) {
-                var ch = LA(0);
-                if (char.IsDigit(ch)) Consume();
-                else if (ch == '.' && !hadDot) {
-                    hadDot = true;
-                    Consume();
-                }
-                else break;
-            }
-
-            return CreateToken(CommandTokenKind.Number);
+        private void AddToken(CommandTokenKind k) {
+            AddToken(k, _segments);
         }
 
-        protected CommandToken ReadWord() {
-            StartRead();
-
-            Consume();
-
-            while (true) {
-                var ch = LA(0);
-                if (char.IsLetter(ch) || ch == '_' || ch == '-' || ch == '.') Consume();
-                else break;
-            }
-
-            return CreateToken(CommandTokenKind.Word);
+        private void ReplaceStringLiterals(ref String s) {
+            s = s.Replace("\\" + STRING_CLOSE, "");
         }
 
-        protected CommandToken ReadString() {
-            StartRead();
-
-            Consume();
-
-            while (true) {
-                var ch = LA(0);
-                if (ch == EOF) break;
-                if (ch == '\r') {
-                    Consume();
-                    if (LA(0) == '\n')
-                        Consume();
-
-                    _line++;
-                    _column = 1;
-                }
-                else if (ch == '\n') {
-                    Consume();
-
-                    _line++;
-                    _column = 1;
-                }
-                else if (ch == '"') {
-                    Consume();
-                    if (LA(0) != '"') break;
-                    Consume();
-                }
-                else Consume();
-            }
-
-            return CreateToken(CommandTokenKind.QuotedString);
+        private void ReplaceCodeBlockLiterals(ref String s) {
+            s = s.Replace("\\" + CODEBLOCK_CLOSE, "");
         }
 
-        protected CommandToken ReadCodeBlock() {
-            StartRead();
-
-            Consume();
-
-            while (true) {
-                var ch = LA(0);
-                if (ch == EOF) break;
-                if (ch == '\r') {
-                    Consume();
-                    if (LA(0) == '\n') Consume();
-
-                    _line++;
-                    _column = 1;
-                }
-                else if (ch == '\n') {
-                    Consume();
-
-                    _line++;
-                    _column = 1;
-                }
-                else if (ch == '}') {
-                    Consume();
-                    if (LA(0) != '}') break;
-                    Consume();
-                }
-                else Consume();
-            }
-
-            return CreateToken(CommandTokenKind.CodeBlock);
+        private void TrimStringEnd(ref String s) {
+            if(IsEndOfString(s)) s = s.Remove(s.Length - 1, STRING_CLOSE.Length);
         }
 
-        protected bool IsSymbol(char c) {
-            foreach (var t in SymbolChars) if (t == c) return true;
-            return false;
+        private void TrimCodeBlockEnd(ref String s) {
+            if (IsEndOfCodeBlock(s)) s = s.Remove(s.Length - 1, CODEBLOCK_CLOSE.Length);
+        }
+
+        private void TrimStringStart(ref String s) {
+            s = s.Substring(STRING_OPEN.Length);
+        }
+
+        private void TrimCodeBlockStart(ref String s) {
+            s = s.Substring(CODEBLOCK_OPEN.Length);
+        }
+
+        private bool IsNumeric(String s) {
+            int i;
+            double d;
+            return int.TryParse(s, out i) || double.TryParse(s, out d);
+        }
+
+        private bool IsEndOfCodeBlock(String s) {
+            return s.EndsWith(CODEBLOCK_CLOSE);
+        }
+
+        private bool IsStartOfCodeBlock(String s) {
+            return s.StartsWith(CODEBLOCK_OPEN);
+        }
+
+        private bool IsStartOfString(String s) {
+            return s.StartsWith(STRING_OPEN);
+        }
+
+        private bool IsEndOfString(String s) {
+            return s.EndsWith(STRING_CLOSE) && !s.EndsWith("\\" + STRING_CLOSE);
         }
     }
 
     public enum CommandTokenKind {
-        Unknown,
         Word,
         Number,
-        QuotedString,
-        CodeBlock,
-        WhiteSpace,
-        Symbol,
-        EOL,
-        EOF
+        String,
+        CodeBlock
     }
 
     public class CommandToken {
         private readonly IDeveloperConsole _console;
 
-        public CommandToken(CommandTokenKind kind, string @string, int line, int column,
-            IDeveloperConsole console) {
-            Kind = kind;
-            String = @string;
-            Line = line;
-            Column = column;
+        public CommandToken(CommandTokenKind kind, string data, IDeveloperConsole console) {
             _console = console;
+            Kind = kind;
+            String = data;
         }
 
-        public int Column { get; private set; }
         public CommandTokenKind Kind { get; private set; }
-        public int Line { get; private set; }
         public string String { get; private set; }
 
         public object Eval {
@@ -345,9 +218,11 @@ namespace DeveloperConsole {
                             return null;
                         }
                     case CommandTokenKind.Number:
-                        return Convert.ToDouble(String);
+                        if (String.Contains('.')) return Convert.ToDouble(String);
+                        return Convert.ToInt32(String);
+                    default:
+                        return String;
                 }
-                return String;
             }
         }
 
