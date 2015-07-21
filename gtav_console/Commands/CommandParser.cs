@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using GTA;
 using Microsoft.CSharp;
+using System.Linq;
 
 namespace DeveloperConsole {
     internal class CommandParser {
@@ -23,6 +24,7 @@ namespace DeveloperConsole {
         }
 
         public char[] SymbolChars { get; set; }
+		public char[] Didgets { get; set; }
         public bool IgnoreWhiteSpace { get; set; }
 
         private void Reset() {
@@ -32,6 +34,8 @@ namespace DeveloperConsole {
                 ';',
                 '<', '>', '?', '|', '\\'
             };
+
+			Didgets = new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
             _line = 1;
             _column = 1;
@@ -127,6 +131,14 @@ namespace DeveloperConsole {
                 }
 
                 default: {
+					if(ch == '-') {
+						char following = LA(1);
+						bool isFollowingDidget = Didgets.Any(x => x == following);
+						if(isFollowingDidget) {
+							return ReadNumber();
+						}
+					}
+
                     if (char.IsLetter(ch) || ch == '_' || ch == '-' || ch == '.') return ReadWord();
                     if (IsSymbol(ch)) {
                         StartRead();
