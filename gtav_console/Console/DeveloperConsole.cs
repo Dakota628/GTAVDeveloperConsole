@@ -50,7 +50,7 @@ namespace DeveloperConsole {
         /// <summary>
         ///     Whether or not console debug is enabled
         /// </summary>
-        public bool Debug = ConsoleSettings.Version.Equals("DEV");
+        public bool Debug = ConsoleSettings.IsDevBuild;
 
         /// <summary>
         ///     The consoles input text
@@ -71,6 +71,8 @@ namespace DeveloperConsole {
 
             CommandDispatcher = new CommandDispatcher();
             ObjectSelector = new ObjectSelector();
+
+            ShowConsole(false);
 
             PrintLine(
                 "This is the developer console. To close, press the ' or F4 key on your keyboard. Run 'help' for a list of commands.");
@@ -250,6 +252,8 @@ namespace DeveloperConsole {
                 PrintWarning("It is highly advised that you do not use any mods online.");
                 _hasWarned = true;
             }
+
+            if (!_isHidden) SetConsoleControls();
 
             ObjectSelector.Tick();
 
@@ -584,32 +588,40 @@ namespace DeveloperConsole {
             _isHidden = !show;
             _lineOffset = 0;
             _historyCursor = -1;
-            if (!_isHidden) {
+            if (show) {
                 _disabledControls = GTAFuncs.DisableAllControls();
-                GTAFuncs.EnableControlAction(Control.MoveLeftRight, true);
-                GTAFuncs.EnableControlAction(Control.MoveUpDown, true);
-                GTAFuncs.EnableControlAction(Control.VehicleAccelerate, true);
-                GTAFuncs.EnableControlAction(Control.VehicleBrake, true);
-                GTAFuncs.EnableControlAction(Control.VehicleDriveLook, true);
-                GTAFuncs.EnableControlAction(Control.VehicleDriveLook2, true);
-                GTAFuncs.EnableControlAction(Control.VehicleMoveLeftRight, true);
-                GTAFuncs.EnableControlAction(Control.VehicleMoveUpDown, true);
-                GTAFuncs.EnableControlAction(Control.LookLeftRight, true);
-                GTAFuncs.EnableControlAction(Control.LookUpDown, true);
-                GTAFuncs.EnableControlAction(Control.FlyUpDown, true);
-                GTAFuncs.EnableControlAction(Control.FlyLeftRight, true);
-                GTAFuncs.EnableControlAction(Control.VehicleFlyRollLeftRight, true);
-                GTAFuncs.EnableControlAction(Control.VehicleFlyPitchUpDown, true);
-                GTAFuncs.EnableControlAction(Control.VehicleFlyYawLeft, true);
-                GTAFuncs.EnableControlAction(Control.VehicleFlyYawRight, true);
-                GTAFuncs.EnableControlAction(Control.VehicleFlyThrottleDown, true);
-                GTAFuncs.EnableControlAction(Control.VehicleFlyThrottleUp, true);
+                SetConsoleControls();
             }
             else {
                 GTAFuncs.SetControlActions(false);
                 GTAFuncs.EnableControls(_disabledControls);
                 _disabledControls.Clear();
             }
+        }
+
+        /// <summary>
+        /// Disables all controls not enabled while using the console
+        /// </summary>
+        private void SetConsoleControls() {
+            GTAFuncs.SetControlActions(false);
+            GTAFuncs.EnableControlAction(Control.MoveLeftRight, true);
+            GTAFuncs.EnableControlAction(Control.MoveUpDown, true);
+            GTAFuncs.EnableControlAction(Control.VehicleAccelerate, true);
+            GTAFuncs.EnableControlAction(Control.VehicleBrake, true);
+            GTAFuncs.EnableControlAction(Control.VehicleDriveLook, true);
+            GTAFuncs.EnableControlAction(Control.VehicleDriveLook2, true);
+            GTAFuncs.EnableControlAction(Control.VehicleMoveLeftRight, true);
+            GTAFuncs.EnableControlAction(Control.VehicleMoveUpDown, true);
+            GTAFuncs.EnableControlAction(Control.LookLeftRight, true);
+            GTAFuncs.EnableControlAction(Control.LookUpDown, true);
+            GTAFuncs.EnableControlAction(Control.FlyUpDown, true);
+            GTAFuncs.EnableControlAction(Control.FlyLeftRight, true);
+            GTAFuncs.EnableControlAction(Control.VehicleFlyRollLeftRight, true);
+            GTAFuncs.EnableControlAction(Control.VehicleFlyPitchUpDown, true);
+            GTAFuncs.EnableControlAction(Control.VehicleFlyYawLeft, true);
+            GTAFuncs.EnableControlAction(Control.VehicleFlyYawRight, true);
+            GTAFuncs.EnableControlAction(Control.VehicleFlyThrottleDown, true);
+            GTAFuncs.EnableControlAction(Control.VehicleFlyThrottleUp, true);
         }
 
         #endregion
