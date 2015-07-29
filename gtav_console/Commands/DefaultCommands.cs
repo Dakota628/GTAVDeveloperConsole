@@ -11,8 +11,9 @@ namespace DeveloperConsole {
         private CommandDispatcher _commandDispatcher;
         private DeveloperConsole _developerConsole;
         private bool _godEnabled;
-        private Blip _lastWaypoint;
+        private bool _forceFieldEnabled;
         private bool _noClipEnabled;
+        private Blip _lastWaypoint;
         private Player _player;
 
         public DefaultCommands() {
@@ -36,10 +37,14 @@ namespace DeveloperConsole {
             if (Game.Player.Character.IsInVehicle() || Game.Player.Character.IsSittingInVehicle()) {
                 var v = Game.Player.Character.CurrentVehicle;
                 if (_godEnabled) {
-                    v.BodyHealth = v.MaxHealth;
-                    v.EngineHealth = v.MaxHealth;
-                    v.PetrolTankHealth = v.MaxHealth;
-                    v.Health = v.MaxHealth;
+                    v = new Vehicle(GTAFuncs.RequestEntityControl(v).Handle);
+                    if(v != null) {
+                        v.BodyHealth = v.MaxHealth;
+                        v.EngineHealth = v.MaxHealth;
+                        v.PetrolTankHealth = v.MaxHealth;
+                        v.Health = v.MaxHealth;
+                        v.CanBeVisiblyDamaged = false;
+                    }
                     GTAFuncs.SetEntityInvinc(v, true);
                 }
                 else GTAFuncs.SetEntityInvinc(v, false);
@@ -102,6 +107,37 @@ namespace DeveloperConsole {
                 GTAFuncs.SetEntityCollision(Game.Player.Character, true, true);
             }
 
+            if (_forceFieldEnabled) {
+                GTAFuncs.ClearAreaOfObjects(Game.Player.Character.Position, 100);
+                GTAFuncs.ClearAreaOfProjectiles(Game.Player.Character.Position, 100);
+
+                foreach (var _ent in World.GetAllEntities()) {
+                    var ent = _ent;
+                    if (ent.Handle == Game.Player.Character.Handle || GTAFuncs.GetPlayerEntity(Game.Player).Handle == ent.Handle) continue;
+
+                    if (ent.Position.DistanceTo(Game.Player.Character.Position) <= 100) {
+                        if (GTAFuncs.GetEntityType(ent) == GTAFuncs.EntityType.Ped && new Ped(ent.Handle).IsPlayer) {
+                            Player player = GTAFuncs.GetPedPlayer(new Ped(ent.Handle));
+                            ent = GTAFuncs.RequestEntityControl(player, 1);
+                            GTAFuncs.ActivateDamageTrackerOnNetworkId(GTAFuncs.GetNetworkID(player), true);
+                        }
+                        else GTAFuncs.RequestEntityControl(ent, 1);
+
+                        if (ent.IsAttached()) {
+                            ent.Detach();
+                            ent.Delete();
+                        } else {
+                            GTAFuncs.SetEntityInvinc(ent, false);
+                            Vector3 vel = (Game.Player.Character.Position - ent.Position);
+                            vel.Normalize();
+                            vel *= -1000;
+                            ent.Velocity = vel + new Vector3(0, 0, 100);
+                        }
+                    }
+
+                }
+            }
+
             if (_developerConsole.Debug && ConsoleSettings.IsDevBuild) GTAFuncs.AntiBan();
         }
 
@@ -160,6 +196,19 @@ namespace DeveloperConsole {
 
             #endregion
 
+            #region Register forcefield
+
+            var forcefield = new CommandDispatcher.Command("forcefield", "Toggles forcefield.",
+                DefaultCommandEventHandler);
+
+            forcefield.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("active", "Whether or not forcefield should be active", typeof(bool))
+                );
+
+            if(ConsoleSettings.IsDevBuild) _commandDispatcher.RegisterCommand(forcefield, true);
+
+            #endregion
+
             #region Register noclip
 
             var noclip = new CommandDispatcher.Command("noclip", "Toggles noclip.",
@@ -191,7 +240,13 @@ namespace DeveloperConsole {
                 );
 
             tp.AddArgumentSet(
-                new CommandDispatcher.CommandArgument("playerId", "The player ID", typeof (double))
+                new CommandDispatcher.CommandArgument("x", "The x coordinate to teleport to", typeof(int)),
+                new CommandDispatcher.CommandArgument("y", "The y coordinate to teleport to", typeof(int)),
+                new CommandDispatcher.CommandArgument("z", "The z coordinate to teleport to", typeof(int))
+            );
+
+            tp.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("playerId", "The player ID", typeof (int))
                 );
 
             _commandDispatcher.RegisterCommand(tp, true);
@@ -270,6 +325,109 @@ namespace DeveloperConsole {
             _commandDispatcher.RegisterCommand(gtfo, true);
 
             #endregion
+
+            #region Register up
+
+            var up = new CommandDispatcher.Command("up", "Teleport entity up.",
+                DefaultCommandEventHandler);
+
+            up.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("distance", "The distance to be teleported up", typeof(int))
+                );
+
+            up.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("entity", "The entity to teleport", typeof(Entity)),
+                new CommandDispatcher.CommandArgument("distance", "The distance to be teleported up", typeof(int))
+                );
+
+            up.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("player", "The player to teleport", typeof(Player)),
+                new CommandDispatcher.CommandArgument("distance", "The distance to be teleported up", typeof(int))
+                );
+
+            _commandDispatcher.RegisterCommand(up, true);
+
+            #endregion
+
+            #region Register launch
+
+            var launch = new CommandDispatcher.Command("launch", "Launch entity up.",
+                DefaultCommandEventHandler);
+
+            launch.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("velocity", "The distance to be launched up", typeof(int))
+                );
+
+            launch.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("entity", "The entity to teleport", typeof(Entity)),
+                new CommandDispatcher.CommandArgument("velocity", "The distance to be launched up", typeof(int))
+                );
+
+            launch.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("player", "The player to teleport", typeof(Player)),
+                new CommandDispatcher.CommandArgument("velocity", "The distance to be launched up", typeof(int))
+                );
+
+            _commandDispatcher.RegisterCommand(launch, true);
+
+            #endregion
+
+            #region Register upright
+
+            var upright = new CommandDispatcher.Command("upright", "Set an entity upright.",
+                DefaultCommandEventHandler);
+
+            upright.AddArgumentSet();
+
+            upright.AddArgumentSet(new CommandDispatcher.CommandArgument("entity", "The entity to set upright", typeof(Entity)));
+
+            upright.AddArgumentSet(new CommandDispatcher.CommandArgument("player", "The player to set upright", typeof(Player)));
+
+            _commandDispatcher.RegisterCommand(upright, true);
+
+            #endregion
+
+            #region Register heal
+
+            var heal = new CommandDispatcher.Command("heal", "Heal an entity",
+                DefaultCommandEventHandler);
+
+            heal.AddArgumentSet();
+
+            heal.AddArgumentSet(new CommandDispatcher.CommandArgument("entity", "The entity to heal", typeof(Entity)));
+
+            heal.AddArgumentSet(new CommandDispatcher.CommandArgument("player", "The player to heal", typeof(Player)));
+
+            _commandDispatcher.RegisterCommand(heal, true);
+
+            #endregion
+
+            #region Register devshirt
+
+            var devshirt = new CommandDispatcher.Command("devshirt", "Get a dev shirt",
+                DefaultCommandEventHandler);
+
+            devshirt.AddArgumentSet(new CommandDispatcher.CommandArgument("color", "The desired shirt color (white, gray/grey or black)", typeof(String)));
+
+            if (ConsoleSettings.IsDevBuild) _commandDispatcher.RegisterCommand(devshirt, true);
+
+            #endregion
+
+            #region Register spectator
+            var spectator = new CommandDispatcher.Command("spectator", "Set yourself or another player as a spectator.",
+                DefaultCommandEventHandler);
+
+            spectator.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("active", "Whether or not the player should be spectating", typeof(bool))
+                );
+
+            spectator.AddArgumentSet(
+                new CommandDispatcher.CommandArgument("player", "The name of the player that should be spectating", typeof(Player)),
+                new CommandDispatcher.CommandArgument("active", "Whether or not the player should be spectating", typeof(bool))
+                );
+
+            _commandDispatcher.RegisterCommand(spectator, true);
+            #endregion
         }
 
         private void DefaultCommandEventHandler(CommandDispatcher.CommandEventArgs e) {
@@ -289,6 +447,9 @@ namespace DeveloperConsole {
                 case "god":
                     GodCommand((bool) e.Tokens[0].Eval);
                     break;
+                case "forcefield":
+                    ForceFieldCommand((bool)e.Tokens[0].Eval);
+                    break;
                 case "noclip":
                     NoclipCommand((bool) e.Tokens[0].Eval);
                     break;
@@ -301,10 +462,11 @@ namespace DeveloperConsole {
                             TpCommand(e.Tokens[0].String);
                             break;
                         case 2:
-                            TpCommand(new Vector3((float) ((double) e.Tokens[0].Eval),
-                                (float) ((double) e.Tokens[1].Eval), (float) ((double) e.Tokens[2].Eval)));
-                            break;
                         case 3:
+                            TpCommand(new Vector3((float) (Convert.ToDouble(e.Tokens[0].Eval)),
+                                (float) (Convert.ToDouble(e.Tokens[1].Eval)), (float) (Convert.ToDouble(e.Tokens[2].Eval))));
+                            break;
+                        case 4:
                             TpCommand(Convert.ToInt32(e.Tokens[0].Eval));
                             break;
                     }
@@ -330,6 +492,71 @@ namespace DeveloperConsole {
                 case "gtfo":
                     GtfoCommand();
                     break;
+                case "up":
+                    switch (e.ArgIndex) {
+                        case 0:
+                            UpCommand((int) e.Tokens[0].Eval);
+                            break;
+                        case 1:
+                            UpCommand((Entity) e.Tokens[0].Eval, (int) e.Tokens[1].Eval);
+                            break;
+                        case 2:
+                            UpCommand((Player) e.Tokens[0].Eval, (int) e.Tokens[1].Eval);
+                            break;
+                    }
+                    break;
+                case "launch":
+                    switch (e.ArgIndex) {
+                        case 0:
+                            LaunchCommand((int)e.Tokens[0].Eval);
+                            break;
+                        case 1:
+                            LaunchCommand((Entity)e.Tokens[0].Eval, (int)e.Tokens[1].Eval);
+                            break;
+                        case 2:
+                            LaunchCommand((Player)e.Tokens[0].Eval, (int)e.Tokens[1].Eval);
+                            break;
+                    }
+                    break;
+                case "upright":
+                    switch (e.ArgIndex) {
+                        case 0:
+                            UprightCommand();
+                            break;
+                        case 1:
+                            UprightCommand((Entity)e.Tokens[0].Eval);
+                            break;
+                        case 2:
+                            UprightCommand((Player)e.Tokens[0].Eval);
+                            break;
+                    }
+                    break;
+                case "heal":
+                    switch (e.ArgIndex) {
+                        case 0:
+                            HealCommand();
+                            break;
+                        case 1:
+                            HealCommand((Entity)e.Tokens[0].Eval);
+                            break;
+                        case 2:
+                            HealCommand((Player)e.Tokens[0].Eval);
+                            break;
+                    }
+                    break;
+                case "devshirt":
+                    DevShirtCommand(e.Tokens[0].String.ToLower());
+                    break;
+                case "spectator":
+                    switch (e.ArgIndex) {
+                        case 0:
+                            SpectatorCommand((bool) e.Tokens[0].Eval);
+                            break;
+                        case 1:
+                            SpectatorCommand((Player) e.Tokens[0].Eval, (bool) e.Tokens[0].Eval);
+                            break;
+                    }
+                    break;
             }
         }
 
@@ -338,6 +565,7 @@ namespace DeveloperConsole {
         #region Tp
 
         private void TpCommand() {
+            GTAFuncs.RequestEntityControl(_player.Character, 5);
             if (_lastWaypoint == null) {
                 _developerConsole.PrintError("Cannot teleport to waypoint. No waypoint exists.");
                 return;
@@ -347,6 +575,7 @@ namespace DeveloperConsole {
         }
 
         private void TpCommand(Vector3 v) {
+            GTAFuncs.RequestEntityControl(_player.Character, 5);
             GTAFuncs.GetPlayerEntity(_player).Position = v;
         }
 
@@ -382,7 +611,7 @@ namespace DeveloperConsole {
         #region Vehicle
 
         private void VehicleCommand(string hash) {
-            World.CreateVehicle(hash, GTAFuncs.GetCoordsFromCam(15));
+            GTAFuncs.SpawnVehicleProper(new Model(hash), GTAFuncs.GetCoordsFromCam(15));
         }
 
         #endregion
@@ -416,6 +645,14 @@ namespace DeveloperConsole {
 
         private void GodCommand(bool active) {
             _godEnabled = active;
+        }
+
+        #endregion
+
+        #region Forcefield
+
+        private void ForceFieldCommand(bool active) {
+            _forceFieldEnabled = active;
         }
 
         #endregion
@@ -471,7 +708,7 @@ namespace DeveloperConsole {
 
         private void GtfoCommand() {
             var p = Game.Player.Character;
-            var v = World.CreateVehicle(new Model(VehicleHash.Lazer), p.Position + new Vector3(0, 0, 500));
+            var v = GTAFuncs.SpawnVehicleProper(new Model(VehicleHash.Lazer), p.Position + new Vector3(0, 0, 500));
             v.EngineRunning = true;
             v.Heading = p.Heading;
             v.Velocity = Vector3.Multiply(v.ForwardVector, 100);
@@ -479,6 +716,105 @@ namespace DeveloperConsole {
             p.SetIntoVehicle(v, VehicleSeat.Driver);
         }
 
+        #endregion
+
+        #region Up
+        private void UpCommand(Player p, int dist) {
+            UpCommand(GTAFuncs.GetPlayerEntity(p), dist);
+        }
+
+        private void UpCommand(Entity e, int dist) {
+            GTAFuncs.RequestEntityControl(e);
+            e.Position += new Vector3(0, 0, dist);
+        }
+
+        private void UpCommand(int dist) {
+            UpCommand(Game.Player, dist);
+        }
+        #endregion
+
+        #region Launch
+        private void LaunchCommand(Player p, int vel) {
+            LaunchCommand(GTAFuncs.GetPlayerEntity(p), vel);
+        }
+
+        private void LaunchCommand(Entity e, int vel) {
+            GTAFuncs.RequestEntityControl(e);
+            e.Velocity += new Vector3(0, 0, vel);
+        }
+
+        private void LaunchCommand(int vel) {
+            LaunchCommand(Game.Player, vel);
+        }
+        #endregion
+
+        #region Upright
+        private void UprightCommand(Player p) {
+            UprightCommand(GTAFuncs.GetPlayerEntity(p));
+        }
+
+        private void UprightCommand(Entity e) {
+            GTAFuncs.RequestEntityControl(e);
+            e.Rotation = new Vector3(0, 0, 0);
+        }
+
+        private void UprightCommand() {
+            UprightCommand(Game.Player);
+        }
+        #endregion
+
+        #region Heal
+        private void HealCommand(Player p) {
+            HealCommand(GTAFuncs.GetPlayerEntity(p));
+        }
+
+        private void HealCommand(Entity e) {
+            GTAFuncs.RequestEntityControl(e);
+            e.Health = e.MaxHealth;
+            while (e.Health != e.MaxHealth) {
+                GTAFuncs.CreateAmbientPickup("PICKUP_HEALTH_STANDARD", e.Position, 50000);
+            }
+        }
+
+        private void HealCommand() {
+            HealCommand(Game.Player);
+        }
+        #endregion
+
+        #region Devshirt
+        private void DevShirtCommand(String color) {
+            switch (color) {
+                case "grey":
+                case "gray":
+                    Function.Call(Hash.CLEAR_PED_DECORATIONS, Game.Player.Character.Handle);
+                    Function.Call(Hash.SET_PED_COMPONENT_VARIATION, 11, 44, 3, 0);
+                    Function.Call(Hash._0x5F5D1665E352A839, Game.Player.Character.Handle, GTAFuncs.GetHashKey("mphipster_overlays"), GTAFuncs.GetHashKey("fm_rstar_m_tshirt_002"));
+                    break;
+                case "black":
+                    Function.Call(Hash.CLEAR_PED_DECORATIONS, Game.Player.Character.Handle);
+                    Function.Call(Hash.SET_PED_COMPONENT_VARIATION, 11, 22, 1, 0);
+                    Function.Call(Hash._0x5F5D1665E352A839, Game.Player.Character.Handle, GTAFuncs.GetHashKey("mphipster_overlays"), GTAFuncs.GetHashKey("fm_rstar_m_tshirt_001"));
+                    break;
+                case "white":
+                    Function.Call(Hash.CLEAR_PED_DECORATIONS, Game.Player.Character.Handle);
+                    Function.Call(Hash.SET_PED_COMPONENT_VARIATION, 11, 22, 0, 0);
+                    Function.Call(Hash._0x5F5D1665E352A839, Game.Player.Character.Handle, GTAFuncs.GetHashKey("mphipster_overlays"), GTAFuncs.GetHashKey("fm_rstar_m_tshirt_003"));
+                    break;
+                default:
+                    _developerConsole.PrintError("No shirt exists with the color '" + color + "'.");
+                    break;
+            }
+        }
+        #endregion
+
+        #region Spectator
+        private void SpectatorCommand(Player p, bool b) {
+            GTAFuncs.SetInSpectatorMode(p, b);
+        }
+
+        private void SpectatorCommand(bool b) {
+            SpectatorCommand(Game.Player, b);
+        } 
         #endregion
 
         #endregion

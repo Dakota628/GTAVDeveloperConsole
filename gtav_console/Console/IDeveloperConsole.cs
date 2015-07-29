@@ -7,5 +7,6 @@ using System.Threading.Tasks;
 namespace DeveloperConsole {
 	public interface IDeveloperConsole {
 		void PrintError(string s);
+        void PrintDebug(string s);
 	}
 }

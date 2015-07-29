@@ -549,34 +549,15 @@ namespace DeveloperConsole {
             }
 
             var c = CommandDispatcher.Commands[cmdName];
-            var a = 0;
-
-            var match = true;
-            foreach (var x in c.ExpectedArgs) {
-                if (tokens.Count == 0 && x.Count == 0) break;
-                match = false;
-                for (var i = 0; i < x.Count; i++) {
-                    if (x.Count != tokens.Count) continue;
-                    match = true;
-                    foreach (var t2 in tokens) {
-                        if (x[i].Type != t2.Type && x[i].Type != typeof (object)) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) break;
-                }
-                if (match) break;
-                a++;
-            }
+            var i = c.AreTokensValid(tokens);
 
 
-            if (!match) {
+            if (i < 0) {
                 PrintError("Provided arguments are not valid for command '" + cmdName + "'");
                 PrintCommandInfo(c);
             }
             else {
-                c.Callback(new CommandDispatcher.CommandEventArgs(c.Name, tokens, a));
+                c.Callback(new CommandDispatcher.CommandEventArgs(c.Name, tokens, i));
             }
         }
 
@@ -591,8 +572,7 @@ namespace DeveloperConsole {
             if (show) {
                 _disabledControls = GTAFuncs.DisableAllControls();
                 SetConsoleControls();
-            }
-            else {
+            } else {
                 GTAFuncs.SetControlActions(false);
                 GTAFuncs.EnableControls(_disabledControls);
                 _disabledControls.Clear();

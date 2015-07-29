@@ -83,7 +83,6 @@ namespace DeveloperConsole {
                         }
                     } else if (IsNumeric(s)) { //Found number
                         AddToken(CommandTokenKind.Number, s);
-                        continue;
                     } else { //Found word
                         AddToken(CommandTokenKind.Word, s);
                     }
@@ -103,7 +102,9 @@ namespace DeveloperConsole {
         }
 
         private void AddToken(CommandTokenKind k, String data) {
-            _tokens.Add(new CommandToken(k, data, _console));
+            var tok = new CommandToken(k, data, _console);
+            _console.PrintDebug("Found token -> " + k + " : " + data + " : " + tok.Eval.GetType().FullName);
+            _tokens.Add(tok);
             _segments = "";
             _isString = false;
             _isCodeBlock = false;

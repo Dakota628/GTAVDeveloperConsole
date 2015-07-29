@@ -354,5 +354,64 @@ namespace DeveloperConsole {
             if (b) Function.Call(Hash.ENABLE_ALL_CONTROL_ACTIONS, 0);
             else Function.Call(Hash.DISABLE_ALL_CONTROL_ACTIONS, 0);
         }
+
+        public static void ClearAreaOfObjects(Vector3 v, float radius, bool b = false) {
+            Function.Call(Hash.CLEAR_AREA_OF_OBJECTS, v.X, v.Y, v.Z, radius, b);
+        }
+
+        public static void ClearAreaOfProjectiles(Vector3 v, float radius, bool b = false) {
+            Function.Call(Hash.CLEAR_AREA_OF_PROJECTILES, v.X, v.Y, v.Z, radius, b);
+        }
+
+        public static void ActivateDamageTrackerOnNetworkId(int id, bool active) {
+            Function.Call(Hash.ACTIVATE_DAMAGE_TRACKER_ON_NETWORK_ID, id, active);
+        }
+
+        public static void SetInSpectatorMode(Player p, bool spectating) {
+            Function.Call(Hash.NETWORK_SET_IN_SPECTATOR_MODE, spectating, p.Character.Handle);
+        }
+
+        public static int GetNetworkID(Player p) {
+            RequestEntityControl(p, 1);
+            int netId = -1;
+            Function.Call(Hash.NETWORK_REQUEST_CONTROL_OF_NETWORK_ID, netId);
+            return netId;
+        }
+
+        public static Vehicle SpawnVehicleProper(Model m, Vector3 pos) {
+            m.Request();
+            Function.Call(Hash.REQUEST_MODEL, m.Hash);
+            int i = 10000;
+            while (!Function.Call<bool>(Hash.HAS_MODEL_LOADED, m.Hash) && i > 0) {
+                i--;
+                Script.Wait(0);
+            }
+            return new Vehicle(Function.Call<int>(Hash.CREATE_VEHICLE, m.Hash, pos.X, pos.Y, pos.Z, 0, 0));
+        }
+
+
+        public static unsafe Entity RequestEntityControl(Player p, int time = 10000) {
+            int netId = -1;
+            Function.Call(Hash.NETWORK_HANDLE_FROM_PLAYER, p.Handle, &netId, 13);
+            DeveloperConsole.Instance.PrintDebug("NET ID FOR " + p.Name + ": " + netId);
+            Function.Call(Hash.NETWORK_REQUEST_CONTROL_OF_NETWORK_ID, netId);
+            int i = time;
+            while (!Function.Call<bool>(Hash.NETWORK_HAS_CONTROL_OF_NETWORK_ID, netId) && i > 0) {
+                i--;
+                Script.Wait(0);
+            }
+            int localId = -1;
+            return RequestEntityControl(p.Character, time);
+        }
+
+        public static Entity RequestEntityControl(Entity e, int time = 10000) {
+            Function.Call(Hash.NETWORK_REQUEST_CONTROL_OF_ENTITY, e.Handle);
+            int i = time;
+            while (!Function.Call<bool>(Hash.NETWORK_HAS_CONTROL_OF_ENTITY, e.Handle) && i > 0) {
+                i--;
+                Script.Wait(0);
+            }
+            return e;
+        }
     }
 }

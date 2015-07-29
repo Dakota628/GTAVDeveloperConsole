@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DeveloperConsole {
     /// <summary>
@@ -132,6 +134,38 @@ namespace DeveloperConsole {
                 var i = ExpectedArgs.Count;
                 ExpectedArgs.Add(new List<CommandArgument>(args));
                 return i;
+            }
+
+            /// <summary>
+            /// Check if the list of tokens is valid for this command
+            /// </summary>
+            /// <param name="toks">The list of tokens</param>
+            /// <returns>An integer with the arg set, -1 if not valid</returns>
+            public int AreTokensValid(List<CommandToken> toks) {
+                int i = -1;
+                if (ExpectedArgs.Count == 0 && toks.Count == 0) return 0;
+                foreach (var argset in ExpectedArgs) {
+                    i++;
+                    if (argset.Count != toks.Count) continue;
+                    if (argset.Count == 0 && toks.Count == 0) return i;
+                    var argTypes = argset.Select(x => x.Type);
+                    var tokTypes = toks.Select(x => x.Type);
+                    if (argTypes.SequenceEqual(tokTypes, new TokenTypeComparer())) return i;
+                }
+                return -1;
+            }
+
+            /// <summary>
+            /// Compares types for use in commands
+            /// </summary>
+            private class TokenTypeComparer : IEqualityComparer<Type> {
+                public bool Equals(Type actual, Type expected) {
+                    return expected.BaseType == actual.BaseType;
+                }
+
+                public int GetHashCode(Type obj) {
+                    return obj.BaseType.GetHashCode();
+                }
             }
         }
 
