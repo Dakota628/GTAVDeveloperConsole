@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Media.Media3D;
@@ -92,22 +92,21 @@ namespace DeveloperConsole {
         /// <summary>
         ///     Create a Rectangle3D
         /// </summary>
-        /// <param name="pos">The bottom left front position of the rectangle</param>
-        /// <param name="size">The size of the rectangle</param>
-        public Rectangle3D(Vector3 pos, Vector3 size) {
-            Position = pos;
-            Size = size;
-            Center = pos + (size/2);
-
+        /// <param name="center">The center of the rectangle.</param>
+		/// <param name="minimum">The minimum dimensions.</param>
+		/// <param name="maximum">The maximum dimensions.</param>
+        public Rectangle3D(Vector3 center, Vector3 min, Vector3 max) {
+            Center = center;
+                
             Corners = new Dictionary<string, Vector3> {
-                {"000", pos},
-                {"100", pos + new Vector3(size.X, 0, 0)},
-                {"010", pos + new Vector3(0, size.Y, 0)},
-                {"001", pos + new Vector3(0, 0, size.Z)},
-                {"110", pos + new Vector3(size.X, size.Y, 0)},
-                {"101", pos + new Vector3(size.X, 0, size.Z)},
-                {"011", pos + new Vector3(0, size.Y, size.Z)},
-                {"111", pos + size}
+                {"000", center + new Vector3(min.X,min.Y,min.Z)},
+                {"100", center + new Vector3(max.X,min.Y,min.Z)},
+                {"010", center + new Vector3(min.X,max.Y,min.Z)},
+                {"001", center + new Vector3(max.X,max.Y,min.Z)},
+                {"110", center + new Vector3(min.X,min.Y,max.Z)},
+                {"101", center + new Vector3(max.X,min.Y,max.Z)},
+                {"011", center + new Vector3(min.X,max.Y,max.Z)},
+                {"111", center + new Vector3(max.X,max.Y,max.Z)}
             };
 
             GenerateEdges();
@@ -115,19 +114,19 @@ namespace DeveloperConsole {
         }
 
         /// <summary>
-        ///     The bottom left front position of the rectangle
-        /// </summary>
-        public Vector3 Position { get; private set; }
-
-        /// <summary>
-        ///     The size of the rectangle
-        /// </summary>
-        public Vector3 Size { get; private set; }
-
-        /// <summary>
-        ///     The center of the rectangle
+        ///     The center position of the rectangle
         /// </summary>
         public Vector3 Center { get; private set; }
+
+        /// <summary>
+        ///     The minimum dimensions.
+        /// </summary>
+        public Vector3 min { get; private set; }
+
+        /// <summary>
+        ///     The maximum dimensions.
+        /// </summary>
+        public Vector3 max { get; private set; }
 
         /// <summary>
         ///     The corners of the rectangle where the string is the corner vector and the value is the location of the corner
@@ -189,7 +188,6 @@ namespace DeveloperConsole {
                 var r = new RotateTransform3D(q, ToPoint3D(Center));
                 Corners[k] = ToVector3(r.Transform(ToPoint3D(Corners[k])));
             }
-            Position = Corners["000"];
             GenerateEdges();
             GenerateFaces();
             return this;
