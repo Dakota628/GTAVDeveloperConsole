@@ -98,18 +98,18 @@ namespace DeveloperConsole {
 		/// <param name="maximum">The maximum dimensions.</param>
         public Rectangle3D(Vector3 center, Vector3 min, Vector3 max) {
             Center = center;
-	    Min = min;
-	    Max = max;
+            Min = min;
+            Max = max;
                 
             Corners = new Dictionary<string, Vector3> {
                 {"000", center + new Vector3(Min.X,Min.Y,Min.Z)},
-                {"100", center + new Vector3(max.X,Min.Y,Min.Z)},
-                {"010", center + new Vector3(Min.X,max.Y,Min.Z)},
-                {"001", center + new Vector3(max.X,max.Y,Min.Z)},
-                {"110", center + new Vector3(Min.X,Min.Y,max.Z)},
-                {"101", center + new Vector3(max.X,Min.Y,max.Z)},
-                {"011", center + new Vector3(Min.X,max.Y,max.Z)},
-                {"111", center + new Vector3(max.X,max.Y,max.Z)}
+                {"100", center + new Vector3(Max.X,Min.Y,Min.Z)},
+                {"010", center + new Vector3(Min.X,Max.Y,Min.Z)},
+                {"001", center + new Vector3(Max.X,Max.Y,Min.Z)},
+                {"110", center + new Vector3(Min.X,Min.Y,Max.Z)},
+                {"101", center + new Vector3(Max.X,Min.Y,Max.Z)},
+                {"011", center + new Vector3(Min.X,Max.Y,Max.Z)},
+                {"111", center + new Vector3(Max.X,Max.Y,Max.Z)}
             };
 
             GenerateEdges();
