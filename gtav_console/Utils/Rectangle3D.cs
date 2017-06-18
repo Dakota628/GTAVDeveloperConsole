@@ -31,7 +31,9 @@ namespace DeveloperConsole {
         /// </summary>
         public Vector3 Point2 { get; private set; }
 
-        //Draw the line
+        /// <summary>
+        /// 	Draw the line
+        /// </summary>
         public void Draw(Color c) {
             GTAFuncs.DrawLine(Point1, Point2, c);
         }
@@ -63,7 +65,6 @@ namespace DeveloperConsole {
         /// <summary>
         ///     The top right corner of the face
         /// </summary>
-        /// a
         public Vector3 TopRight { get; private set; }
 
         /// <summary>
@@ -97,15 +98,17 @@ namespace DeveloperConsole {
 		/// <param name="maximum">The maximum dimensions.</param>
         public Rectangle3D(Vector3 center, Vector3 min, Vector3 max) {
             Center = center;
+	    Min = min;
+	    Max = max;
                 
             Corners = new Dictionary<string, Vector3> {
-                {"000", center + new Vector3(min.X,min.Y,min.Z)},
-                {"100", center + new Vector3(max.X,min.Y,min.Z)},
-                {"010", center + new Vector3(min.X,max.Y,min.Z)},
-                {"001", center + new Vector3(max.X,max.Y,min.Z)},
-                {"110", center + new Vector3(min.X,min.Y,max.Z)},
-                {"101", center + new Vector3(max.X,min.Y,max.Z)},
-                {"011", center + new Vector3(min.X,max.Y,max.Z)},
+                {"000", center + new Vector3(Min.X,Min.Y,Min.Z)},
+                {"100", center + new Vector3(max.X,Min.Y,Min.Z)},
+                {"010", center + new Vector3(Min.X,max.Y,Min.Z)},
+                {"001", center + new Vector3(max.X,max.Y,Min.Z)},
+                {"110", center + new Vector3(Min.X,Min.Y,max.Z)},
+                {"101", center + new Vector3(max.X,Min.Y,max.Z)},
+                {"011", center + new Vector3(Min.X,max.Y,max.Z)},
                 {"111", center + new Vector3(max.X,max.Y,max.Z)}
             };
 
@@ -121,12 +124,12 @@ namespace DeveloperConsole {
         /// <summary>
         ///     The minimum dimensions.
         /// </summary>
-        public Vector3 min { get; private set; }
+        public Vector3 Min { get; private set; }
 
         /// <summary>
         ///     The maximum dimensions.
         /// </summary>
-        public Vector3 max { get; private set; }
+        public Vector3 Max { get; private set; }
 
         /// <summary>
         ///     The corners of the rectangle where the string is the corner vector and the value is the location of the corner
