@@ -263,9 +263,9 @@ namespace DeveloperConsole {
         /// <param name="e">The entity to draw around</param>
         /// <param name="c">The box color</param>
         public void DrawEntBox(Entity e, Color c) {
-            var size = e.Model.GetDimensions();
-            var location = e.Position - (size/2);
-            new Rectangle3D(location, size).Rotate(GTAFuncs.GetEntityQuaternion(e)).DrawWireFrame(c, true);
+            Vector3 min = new Vector3(), max = new Vector3();
+            e.Model.GetDimensions(out min, out max);
+            new Rectangle3D(e.Position, min, max).Rotate(GTAFuncs.GetEntityQuaternion(e)).DrawWireFrame(c, true);
         }
     }
 }
