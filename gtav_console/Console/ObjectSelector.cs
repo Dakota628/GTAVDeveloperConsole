@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using GTA;
 using GTA.Native;
+using GTA.Math;
 
 namespace DeveloperConsole {
     /// <summary>
