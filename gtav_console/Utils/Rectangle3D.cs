@@ -186,11 +186,10 @@ namespace DeveloperConsole {
         /// <param name="rot">The quaternion to rotate by</param>
         /// <returns>The current rectangle instance</returns>
         public Rectangle3D Rotate(Quaternion rot) {
-            foreach (var k in new List<string>(Corners.Keys)) {
-                var q = new QuaternionRotation3D(new System.Windows.Media.Media3D.Quaternion(rot.X, rot.Y, rot.Z, rot.W));
-                var r = new RotateTransform3D(q, ToPoint3D(Center));
+            var q = new QuaternionRotation3D(new System.Windows.Media.Media3D.Quaternion(rot.X, rot.Y, rot.Z, rot.W));
+            var r = new RotateTransform3D(q, ToPoint3D(Center));
+            foreach (var k in new List<string>(Corners.Keys))
                 Corners[k] = ToVector3(r.Transform(ToPoint3D(Corners[k])));
-            }
             GenerateEdges();
             GenerateFaces();
             return this;
